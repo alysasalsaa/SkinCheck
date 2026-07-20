@@ -48,6 +48,21 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+/* Token warna custom SkinCheck (sage green brand) -- nama berbeda dari
+   token shadcn di atas, jadi nggak saling tabrakan. */
+@theme {
+    --color-primary-dark: #3D6153;
+    --color-primary-light: #E8EFEC;
+    --color-cream: #FFF8F1;
+    --color-gold: #D9B66B;
+    --color-gold-light: #F5EBD6;
+    --color-success: #4CAF50;
+    --color-success-light: #E8F5E9;
+    --color-warning: #F4B942;
+    --color-warning-light: #FDF3DC;
+    --color-ink: #2D3748;
+}
+
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
@@ -55,8 +70,11 @@
     --card-foreground: oklch(0.145 0 0);
     --popover: oklch(1 0 0);
     --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
+    /* Primary di-override jadi sage green (brand SkinCheck) -- ini token
+       yang sama dipakai komponen shadcn (Button, dll), jadi otomatis
+       konsisten di semua komponen begitu diganti di sini. */
+    --primary: #4F7A6A;
+    --primary-foreground: #FFFFFF;
     --secondary: oklch(0.97 0 0);
     --secondary-foreground: oklch(0.205 0 0);
     --muted: oklch(0.97 0 0);
