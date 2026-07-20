@@ -7,12 +7,13 @@ const NAV_LINKS = [
   { label: "Technology", to: "/#technology" },
   { label: "Cara Kerja", to: "/#how-it-works" },
   { label: "Impact", to: "/impact" },
+  { label: "About", to: "/about" },
 ];
 
 /**
  * Alasan UX: navbar konsisten di semua halaman bikin user nggak "kehilangan
- * arah" pas pindah dari Landing ke Impact -- mereka selalu tau cara balik
- * atau lanjut ke Assessment dari mana aja.
+ * arah" pas pindah dari Landing ke Impact/About -- mereka selalu tau cara
+ * balik atau lanjut ke Assessment dari mana aja.
  */
 export function Navbar() {
   const navigate = useNavigate();
