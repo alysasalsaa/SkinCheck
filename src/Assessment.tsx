@@ -147,9 +147,11 @@ export default function Assessment() {
     }
     Object.values(byCategory).forEach((arr) => arr.sort((a, b) => b.total_pct - a.total_pct));
   }
-  const topResult = results && results.length > 0
-    ? [...results].sort((a, b) => b.confidence_pct - a.confidence_pct)[0]
-    : null;
+  const topPicks = CATEGORY_ORDER.filter((c) => byCategory[c]?.length).map((c) => byCategory[c][0]);
+  const avgConfidence = topPicks.length
+    ? Math.round(topPicks.reduce((sum, p) => sum + p.confidence_pct, 0) / topPicks.length)
+    : 0;
+  const worstEvidenceTier = topPicks.some((p) => p.evidence_tier === "L3") ? "L3" : topPicks.some((p) => p.evidence_tier === "L2") ? "L2" : "L1";
 
   const isNextDisabled =
     (step === 0 && ageBracket === null) ||
@@ -306,17 +308,17 @@ export default function Assessment() {
                   <ReportRow label="Hamil / Menyusui" value={hamil ? "Ya" : "Tidak"} last />
                 </div>
 
-                {topResult && (
+                {topPicks.length > 0 && (
                   <div className="mt-4 flex items-center justify-between rounded-2xl bg-slate-900 p-5">
                     <div>
-                      <p className="text-xs font-semibold text-slate-400">AI Confidence</p>
-                      <p className="text-2xl font-extrabold text-white">{topResult.confidence_pct}%</p>
+                      <p className="text-xs font-semibold text-slate-400">AI Confidence <span className="text-slate-500">(rata-rata)</span></p>
+                      <p className="text-2xl font-extrabold text-white">{avgConfidence}%</p>
                     </div>
                     <div className="text-right">
-                      <p className="text-xs font-semibold text-slate-400">Evidence</p>
+                      <p className="text-xs font-semibold text-slate-400">Evidence <span className="text-slate-500">(terendah)</span></p>
                       <p className="text-amber-400">
-                        {"\u2605".repeat(topResult.evidence_tier === "L1" ? 5 : topResult.evidence_tier === "L2" ? 4 : 2)}
-                        <span className="text-slate-600">{"\u2605".repeat(5 - (topResult.evidence_tier === "L1" ? 5 : topResult.evidence_tier === "L2" ? 4 : 2))}</span>
+                        {"\u2605".repeat(worstEvidenceTier === "L1" ? 5 : worstEvidenceTier === "L2" ? 4 : 2)}
+                        <span className="text-slate-600">{"\u2605".repeat(5 - (worstEvidenceTier === "L1" ? 5 : worstEvidenceTier === "L2" ? 4 : 2))}</span>
                       </p>
                     </div>
                   </div>
