@@ -614,7 +614,7 @@ function ProductCard({
                     {llmAnswer}
                   </p>
                   <p className="mt-1.5 text-[10px] font-medium text-slate-400">
-                    {usedFallback ? "Jawaban dari sistem (mode offline)" : "Powered by Gemini 2.5 Flash"}
+                    {usedFallback ? "Jawaban dari sistem (mode offline)" : "Powered by Gemini"}
                   </p>
                 </motion.div>
               )}
