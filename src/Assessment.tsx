@@ -302,8 +302,16 @@ export default function Assessment() {
               <div className="rounded-xl bg-red-50 p-4 text-sm text-red-600">{error} Coba lagi sebentar lagi ya.</div>
             ) : (
               <>
-                <p className="text-xs font-bold uppercase tracking-wide text-primary">Skin Report</p>
-                <h2 className="mt-1 text-2xl font-extrabold text-ink">Hasil analisis kulitmu</h2>
+                <motion.div
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring", stiffness: 260, damping: 15, delay: 0.1 }}
+                  className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-success-light"
+                >
+                  <Check size={26} className="text-success" strokeWidth={3} />
+                </motion.div>
+                <p className="text-center text-xs font-bold uppercase tracking-wide text-primary">Skin Report</p>
+                <h2 className="mt-1 text-center text-2xl font-extrabold text-ink">Hasil analisis kulitmu</h2>
 
                 <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                   <ReportRow label="Tipe Kulit" value={skinType ?? "-"} />
@@ -526,7 +534,7 @@ function ProductCard({
 
 
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+    <motion.div whileHover={{ y: -3, boxShadow: "0 8px 20px rgba(15,23,42,0.08)" }} transition={{ duration: 0.2 }} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100">
           <Icon size={16} className="text-primary" />
@@ -637,7 +645,7 @@ function ProductCard({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 

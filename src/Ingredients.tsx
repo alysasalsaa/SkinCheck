@@ -107,6 +107,7 @@ export default function Ingredients() {
                   initial={{ opacity: 0, y: 12 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: Math.min(i * 0.03, 0.3) }}
+                  whileHover={{ y: -3, boxShadow: "0 8px 20px rgba(15,23,42,0.08)" }}
                   className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
                 >
                   <button onClick={() => setExpanded(isOpen ? null : ing.ingredient_name)} className="flex w-full items-start justify-between text-left">
