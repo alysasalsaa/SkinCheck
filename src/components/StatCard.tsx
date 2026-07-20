@@ -20,14 +20,14 @@ export function StatCard({ icon: Icon, value, label, delay = 0 }: StatCardProps)
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5, delay, ease: "easeOut" }}
       whileHover={{ y: -4 }}
-      className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm"
+      className="flex items-start gap-3.5 rounded-2xl border border-slate-200 bg-white px-5 py-5 shadow-sm"
     >
-      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-light">
-        <Icon size={18} className="text-primary" strokeWidth={2} />
+      <div className="mt-0.5 flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary-light">
+        <Icon size={20} className="text-primary" strokeWidth={2} />
       </div>
       <div className="min-w-0">
-        <p className="text-lg font-extrabold text-ink leading-none">{value}</p>
-        <p className="text-xs leading-snug text-slate-500 mt-1">{label}</p>
+        <p className="text-xl font-extrabold text-ink leading-none">{value}</p>
+        <p className="text-xs leading-snug text-slate-500 mt-1.5">{label}</p>
       </div>
     </motion.div>
   );
