@@ -117,7 +117,7 @@ export default function Impact() {
         <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
           <span className="text-sm text-slate-400">Berkontribusi terhadap</span>
           {["SDG 3", "SDG 9", "SDG 12"].map((s) => (
-            <span key={s} className={`rounded-full px-3 py-1 text-xs font-bold text-white ${SDG_COLORS[s]}`}>{s}</span>
+            <span key={s} className={`inline-block whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold text-white ${SDG_COLORS[s]}`}>{s}</span>
           ))}
         </div>
       </section>
@@ -147,16 +147,16 @@ export default function Impact() {
           <table className="w-full text-left text-sm">
             <thead className="bg-slate-50 text-xs font-bold uppercase tracking-wide text-slate-400">
               <tr>
-                <th className="px-5 py-3">Fitur</th>
-                <th className="px-5 py-3">SDGs</th>
+                <th className="px-4 py-3 sm:px-5">Fitur</th>
+                <th className="w-24 px-4 py-3 sm:w-28 sm:px-5">SDGs</th>
               </tr>
             </thead>
             <tbody>
               {FEATURE_SDG_MAP.map((row, i) => (
                 <tr key={row.feature} className={i !== FEATURE_SDG_MAP.length - 1 ? "border-b border-slate-100" : ""}>
-                  <td className="px-5 py-3.5 font-medium text-slate-700">{row.feature}</td>
-                  <td className="px-5 py-3.5">
-                    <span className={`rounded-full px-2.5 py-1 text-xs font-bold text-white ${SDG_COLORS[row.sdg]}`}>{row.sdg}</span>
+                  <td className="px-4 py-3.5 text-sm font-medium text-slate-700 sm:px-5">{row.feature}</td>
+                  <td className="px-4 py-3.5 sm:px-5">
+                    <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-bold text-white ${SDG_COLORS[row.sdg]}`}>{row.sdg}</span>
                   </td>
                 </tr>
               ))}
