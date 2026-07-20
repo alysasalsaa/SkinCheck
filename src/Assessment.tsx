@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Loader2,
-  Droplets, Sun, RotateCcw, MessageCircle,
+  Droplets, Sun, RotateCcw, MessageCircle, GitCompare, TriangleAlert, CircleCheck,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -37,9 +37,16 @@ interface Recommendation {
   title: string;
   category: string;
   price_idr: number | null;
+  bpom_status: string;
   pregnancy_safe_status: string;
+  skin_match_pct: number;
+  ingredient_match_pct: number;
+  synergy_pct: number;
+  bpom_pct: number;
   total_pct: number;
   confidence_pct: number;
+  matched_ingredients: string[];
+  avoided_ingredients: string[];
   evidence_tier: "L1" | "L2" | "L3";
   evidence_level: string;
   explanation: string;
@@ -439,6 +446,7 @@ function ProductCard({
 }) {
   const [consultantOpen, setConsultantOpen] = useState(false);
   const [activeQ, setActiveQ] = useState<string | null>(null);
+  const [compareWith, setCompareWith] = useState<Recommendation | null>(null);
   const Icon = category === "Sunscreen" ? Sun : Droplets;
   let badge = { label: "Alternative", bg: "bg-orange-50", fg: "text-orange-700" };
   if (r.total_pct >= 90) badge = { label: "Highly Recommended", bg: "bg-emerald-50", fg: "text-emerald-700" };
@@ -462,6 +470,34 @@ function ProductCard({
         <p className="shrink-0 text-lg font-extrabold text-blue-600">{r.total_pct}%</p>
       </div>
       <Badge className={`mt-2.5 rounded-full ${badge.bg} ${badge.fg}`}>{badge.label}</Badge>
+
+      {alternatives.length > 0 && (
+        <button
+          onClick={() => setCompareWith(compareWith ? null : alternatives[0])}
+          className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-slate-600"
+        >
+          <GitCompare size={13} /> {compareWith ? "Tutup perbandingan" : "Bandingkan Produk"}
+        </button>
+      )}
+
+      <AnimatePresence>
+        {compareWith && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="overflow-hidden"
+          >
+            <ComparePanel
+              a={r}
+              b={compareWith}
+              alternatives={alternatives}
+              onChangeB={setCompareWith}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <button
         onClick={() => { setConsultantOpen(!consultantOpen); setActiveQ(null); }}
@@ -510,6 +546,121 @@ function ProductCard({
           </motion.div>
         )}
       </AnimatePresence>
+    </div>
+  );
+}
+
+/**
+ * Compare + AI Verdict + Why Not, dalam satu panel.
+ * Semua angka & alasan diambil langsung dari komponen skor Recommendation
+ * Engine v6 (skin_match, ingredient_match, synergy, bpom) -- bukan dihitung
+ * ulang atau dikarang di frontend.
+ */
+function ComparePanel({
+  a, b, alternatives, onChangeB,
+}: {
+  a: Recommendation;
+  b: Recommendation;
+  alternatives: Recommendation[];
+  onChangeB: (r: Recommendation) => void;
+}) {
+  const winner = a.total_pct >= b.total_pct ? a : b;
+  const loser = winner.id === a.id ? b : a;
+
+  const rows = [
+    { label: "Skin Match", av: a.skin_match_pct, bv: b.skin_match_pct, max: 40 },
+    { label: "Ingredient Match", av: a.ingredient_match_pct, bv: b.ingredient_match_pct, max: 30 },
+    { label: "Synergy", av: a.synergy_pct, bv: b.synergy_pct, max: 10 },
+    { label: "BPOM", av: a.bpom_pct, bv: b.bpom_pct, max: 10 },
+    { label: "Total Score", av: a.total_pct, bv: b.total_pct, max: 100 },
+  ];
+
+  const reasons: string[] = [];
+  if (loser.price_idr && winner.price_idr && loser.price_idr > winner.price_idr) {
+    reasons.push(`Harga lebih tinggi: Rp${loser.price_idr.toLocaleString("id-ID")} vs Rp${winner.price_idr.toLocaleString("id-ID")}`);
+  }
+  if (loser.avoided_ingredients.length > 0) {
+    reasons.push(`Mengandung ${loser.avoided_ingredients.join(", ")} yang perlu dihindari sesuai profil kamu`);
+  }
+  if (loser.skin_match_pct < winner.skin_match_pct) {
+    reasons.push("Skor kecocokan tipe kulit lebih rendah");
+  }
+  if (loser.ingredient_match_pct < winner.ingredient_match_pct) {
+    reasons.push("Kandungan aktif kurang sesuai kebutuhan dibanding pilihan utama");
+  }
+  if (loser.synergy_pct < winner.synergy_pct) {
+    reasons.push("Kombinasi bahan aktifnya kurang saling mendukung");
+  }
+  if (loser.pregnancy_safe_status === "tidak_aman" && winner.pregnancy_safe_status !== "tidak_aman") {
+    reasons.push("Tidak aman untuk kehamilan/menyusui berdasarkan data kami");
+  }
+  if (reasons.length === 0) reasons.push("Skor totalnya sedikit lebih rendah secara keseluruhan dibanding pilihan utama.");
+
+  return (
+    <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
+      {alternatives.length > 1 && (
+        <div className="mb-3 flex flex-wrap gap-1.5">
+          {alternatives.map((alt) => (
+            <button
+              key={alt.id}
+              onClick={() => onChangeB(alt)}
+              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+                alt.id === b.id ? "bg-slate-900 text-white" : "bg-white text-slate-500 border border-slate-200"
+              }`}
+            >
+              {alt.brand}
+            </button>
+          ))}
+        </div>
+      )}
+
+      <div className="grid grid-cols-3 items-center gap-2 text-center">
+        <p className="truncate text-xs font-bold text-slate-900">{a.brand}</p>
+        <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">vs</p>
+        <p className="truncate text-xs font-bold text-slate-900">{b.brand}</p>
+      </div>
+
+      <div className="mt-2.5 flex flex-col gap-2">
+        {rows.map((row) => (
+          <div key={row.label} className="grid grid-cols-3 items-center gap-2">
+            <div className="flex items-center gap-1.5">
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
+                <div className="h-full rounded-full bg-blue-500" style={{ width: `${Math.max(0, (row.av / row.max) * 100)}%` }} />
+              </div>
+              <span className="w-8 text-right text-[11px] font-bold text-slate-700">{row.av}</span>
+            </div>
+            <p className="text-center text-[10px] font-medium text-slate-400">{row.label}</p>
+            <div className="flex items-center gap-1.5">
+              <span className="w-8 text-left text-[11px] font-bold text-slate-700">{row.bv}</span>
+              <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
+                <div className="ml-auto h-full rounded-full bg-slate-500" style={{ width: `${Math.max(0, (row.bv / row.max) * 100)}%` }} />
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="mt-3.5 flex items-start gap-2 rounded-lg bg-emerald-50 p-3">
+        <CircleCheck size={15} className="mt-0.5 shrink-0 text-emerald-600" />
+        <div>
+          <p className="text-[11px] font-bold text-emerald-800">AI Verdict</p>
+          <p className="mt-0.5 text-xs leading-relaxed text-emerald-700">
+            Kami memilih <b>{winner.brand}</b> karena skor total lebih tinggi ({winner.total_pct}% vs {loser.total_pct}%).
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-3">
+        <TriangleAlert size={15} className="mt-0.5 shrink-0 text-amber-600" />
+        <div>
+          <p className="text-[11px] font-bold text-amber-800">Mengapa bukan {loser.brand}?</p>
+          <ul className="mt-1 flex flex-col gap-0.5">
+            {reasons.map((r) => (
+              <li key={r} className="text-xs leading-relaxed text-amber-700">&bull; {r}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
     </div>
   );
 }
