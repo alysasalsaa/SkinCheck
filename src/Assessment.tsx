@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Loader2,
   Droplets, Sun, RotateCcw, MessageCircle, GitCompare, TriangleAlert, CircleCheck,
+  Target, Brain, FileText, Trophy, Scale,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -315,19 +316,31 @@ export default function Assessment() {
                     <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Recommendation Summary</p>
                     <div className="grid grid-cols-3 gap-3">
                       <div>
-                        <p className="text-[10px] font-semibold text-slate-400">\uD83C\uDFAF Best Skin Match</p>
+                        <div className="flex items-center gap-1 text-slate-400">
+                          <Target size={12} />
+                          <p className="text-[10px] font-semibold">Best Match</p>
+                        </div>
                         <p className="mt-1 text-xl font-extrabold text-white">{bestPick.total_pct}%</p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-semibold text-slate-400">\uD83E\uDDE0 Confidence</p>
+                        <div className="flex items-center gap-1 text-slate-400">
+                          <Brain size={12} />
+                          <p className="text-[10px] font-semibold">Confidence</p>
+                        </div>
                         <p className="mt-1 text-xl font-extrabold text-white">{bestPick.confidence_pct}%</p>
                       </div>
                       <div>
-                        <p className="text-[10px] font-semibold text-slate-400">\u2B50 Evidence</p>
-                        <p className="mt-1.5 text-amber-400">
-                          {"\u2605".repeat(bestPick.evidence_tier === "L1" ? 5 : bestPick.evidence_tier === "L2" ? 4 : 2)}
-                          <span className="text-slate-600">{"\u2605".repeat(5 - (bestPick.evidence_tier === "L1" ? 5 : bestPick.evidence_tier === "L2" ? 4 : 2))}</span>
-                        </p>
+                        <div className="flex items-center gap-1 text-slate-400">
+                          <FileText size={12} />
+                          <p className="text-[10px] font-semibold">Evidence</p>
+                        </div>
+                        <span className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[11px] font-bold ${
+                          bestPick.evidence_tier === "L1" ? "bg-emerald-500/20 text-emerald-400"
+                          : bestPick.evidence_tier === "L2" ? "bg-amber-500/20 text-amber-400"
+                          : "bg-slate-500/20 text-slate-400"
+                        }`}>
+                          {bestPick.evidence_tier === "L1" ? "High" : bestPick.evidence_tier === "L2" ? "Medium" : "Limited"}
+                        </span>
                       </div>
                     </div>
                     <p className="mt-3 border-t border-slate-800 pt-2.5 text-[11px] leading-relaxed text-slate-500">
@@ -517,7 +530,7 @@ function ProductCard({
         onClick={() => { setConsultantOpen(!consultantOpen); setActiveQ(null); }}
         className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-blue-600"
       >
-        <MessageCircle size={13} /> {consultantOpen ? "Tutup AI Skin Consultant" : "\uD83D\uDCAC Tanya AI Skin Consultant"}
+        <MessageCircle size={13} /> {consultantOpen ? "Tutup AI Skin Consultant" : "Tanya AI Skin Consultant"}
       </button>
 
       <AnimatePresence>
@@ -678,8 +691,9 @@ function ComparePanel({
           const isWinner = p.id === winner.id && !isFullyIdentical;
           return (
             <div key={p.id} className={`rounded-lg px-2.5 py-2 text-center ${isWinner ? "bg-emerald-100" : "bg-white border border-slate-200"}`}>
-              <p className={`text-[10px] font-bold ${isWinner ? "text-emerald-700" : "text-slate-500"}`}>
-                {isFullyIdentical ? "\u2696\uFE0F Setara" : isWinner ? "\uD83C\uDFC6 Recommended" : "\u26A0\uFE0F Alternative"}
+              <p className={`flex items-center justify-center gap-1 text-[10px] font-bold ${isWinner ? "text-emerald-700" : "text-slate-500"}`}>
+                {isFullyIdentical ? <Scale size={11} /> : isWinner ? <Trophy size={11} /> : <TriangleAlert size={11} />}
+                {isFullyIdentical ? "Setara" : isWinner ? "Recommended" : "Alternative"}
               </p>
               <p className="truncate text-xs font-bold text-slate-900">{p.brand}</p>
               <p className="text-[10px] text-slate-400">
