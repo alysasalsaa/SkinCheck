@@ -114,11 +114,13 @@ export default function Impact() {
           </div>
         </div>
 
-        <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
+        <div className="mt-8 flex flex-col items-center gap-2 sm:flex-row sm:justify-center">
           <span className="text-sm text-slate-400">Berkontribusi terhadap</span>
-          {["SDG 3", "SDG 9", "SDG 12"].map((s) => (
-            <span key={s} className={`inline-block whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold text-white ${SDG_COLORS[s]}`}>{s}</span>
-          ))}
+          <div className="flex flex-wrap justify-center gap-2">
+            {["SDG 3", "SDG 9", "SDG 12"].map((s) => (
+              <span key={s} className={`inline-block whitespace-nowrap rounded-full px-3 py-1 text-xs font-bold text-white ${SDG_COLORS[s]}`}>{s}</span>
+            ))}
+          </div>
         </div>
       </section>
 
