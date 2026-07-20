@@ -22,7 +22,7 @@ export function Navbar() {
         <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
           <Sparkles size={16} className="text-white" strokeWidth={2.5} />
         </div>
-        <span className="font-extrabold text-sm tracking-tight text-slate-900">SkinMatch AI</span>
+        <span className="font-extrabold text-sm tracking-tight text-slate-900">SkinCheck</span>
       </Link>
 
       <div className="hidden items-center gap-1 md:flex">

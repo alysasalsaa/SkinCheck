@@ -68,7 +68,7 @@ export default function Impact() {
             Bukan Sekadar Rekomendasi &mdash; Dampak Nyata
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
-            SkinMatch AI dirancang untuk berkontribusi terhadap kesehatan masyarakat,
+            SkinCheck dirancang untuk berkontribusi terhadap kesehatan masyarakat,
             konsumsi yang bertanggung jawab, dan pertumbuhan industri lokal Indonesia.
           </p>
         </motion.div>
@@ -212,7 +212,7 @@ export default function Impact() {
 
       <footer className="border-t border-slate-200 py-8">
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 px-6 text-sm text-slate-400 sm:flex-row">
-          <span>&copy; 2026 SkinMatch AI &mdash; Proyek GEMASTIK</span>
+          <span>&copy; 2026 SkinCheck &mdash; Proyek GEMASTIK</span>
           <span>Bukan pengganti konsultasi dokter kulit</span>
         </div>
       </footer>
