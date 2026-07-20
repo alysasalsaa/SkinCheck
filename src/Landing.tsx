@@ -68,7 +68,7 @@ export default function Landing() {
               </Button>
             </div>
 
-            <div className="mt-2 grid grid-cols-2 gap-2.5 sm:grid-cols-4">
+            <div className="mt-2 grid grid-cols-2 gap-3">
               <StatCard icon={BadgeCheck} value="195+" label="Produk Lokal" delay={0.1} />
               <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.18} />
               <StatCard icon={Database} value="9" label="Brand Lokal" delay={0.26} />
@@ -215,7 +215,7 @@ export default function Landing() {
           ))}
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="mt-8 grid grid-cols-2 gap-3">
           <StatCard icon={BadgeCheck} value="195+" label="Produk Lokal" delay={0.1} />
           <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.16} />
           <StatCard icon={Database} value="9" label="Brand Lokal" delay={0.22} />
