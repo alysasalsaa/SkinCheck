@@ -136,6 +136,8 @@ export default function Landing() {
 
       {/* ================= WHY DIFFERENT ================= */}
       <section id="technology" className="mx-auto max-w-[1200px] px-6 py-20 md:py-28">
+        <SectionTitle
+          eyebrow="Kenapa Berbeda"
           title="Mengapa AI Kami Berbeda"
           subtitle="Bukan sekadar chatbot yang menjawab pertanyaan &mdash; ini sistem yang benar-benar menganalisis sebelum merekomendasikan."
         />
