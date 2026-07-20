@@ -2,8 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
-  ArrowLeft, ArrowRight, Check, Sparkles, Loader2,
-  Droplets, Sun, RotateCcw,
+  ArrowLeft, ArrowRight, Check, Loader2,
+  Droplets, Sun, RotateCcw, MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -318,7 +318,14 @@ export default function Assessment() {
                 <h3 className="mb-3 mt-7 text-base font-bold text-slate-900">Rekomendasi Routine-mu</h3>
                 <div className="flex flex-col gap-3">
                   {CATEGORY_ORDER.filter((c) => byCategory[c]?.length).map((cat) => (
-                    <ProductCard key={cat} category={cat} r={byCategory[cat][0]} />
+                    <ProductCard
+                      key={cat}
+                      category={cat}
+                      r={byCategory[cat][0]}
+                      alternatives={byCategory[cat].slice(1)}
+                      routineStep={CATEGORY_ORDER.indexOf(cat) + 1}
+                      routineTotal={CATEGORY_ORDER.length}
+                    />
                   ))}
                   {!results?.length && (
                     <p className="py-8 text-center text-sm text-slate-400">
@@ -368,12 +375,78 @@ function ReportRow({ label, value, last }: { label: string; value: string; last?
   );
 }
 
-function ProductCard({ category, r }: { category: string; r: Recommendation }) {
-  const [open, setOpen] = useState(false);
+interface QA {
+  q: string;
+  getAnswer: (r: Recommendation, alternatives: Recommendation[], routineStep: number, routineTotal: number, category: string) => string;
+}
+
+// Semua jawaban disusun dari data Recommendation Engine (Knowledge Base + Explainable
+// Engine) yang SUDAH ADA -- bukan LLM yang mikir/mengarang sendiri. Kalau nanti mau
+// nambah LLM, posisinya cuma "menghaluskan bahasa" dari jawaban template ini, fakta di
+// dalamnya tetap sama persis.
+const SUGGESTED_QUESTIONS: QA[] = [
+  {
+    q: "Kenapa produk ini cocok?",
+    getAnswer: (r) => r.explanation || "Belum ada data penjelasan lengkap untuk produk ini.",
+  },
+  {
+    q: "Apa fungsi kandungannya?",
+    getAnswer: (r) => {
+      const lines = (r.explanation || "").split("\n").filter((l) => l.includes("Mengandung"));
+      return lines.length ? lines.join("\n") : "Data kandungan aktif untuk produk ini belum lengkap di sistem kami.";
+    },
+  },
+  {
+    q: "Apakah aman untuk ibu hamil?",
+    getAnswer: (r) => {
+      if (r.pregnancy_safe_status === "aman")
+        return "Ya, berdasarkan data kami produk ini tergolong aman digunakan selama kehamilan/menyusui. Tetap disarankan konsultasi ke dokter untuk memastikan.";
+      if (r.pregnancy_safe_status === "perlu_konsultasi")
+        return "Produk ini mengandung bahan yang tergolong perlu kehati-hatian saat hamil/menyusui. Sebaiknya konsultasikan ke dokter dulu sebelum pemakaian.";
+      if (r.pregnancy_safe_status === "tidak_aman")
+        return "Produk ini TIDAK disarankan untuk ibu hamil/menyusui karena mengandung bahan aktif yang berisiko. Coba cek alternatif lain di kategori yang sama.";
+      return "Status keamanan kehamilan untuk produk ini belum kami verifikasi.";
+    },
+  },
+  {
+    q: "Bagaimana urutan pemakaian?",
+    getAnswer: (_r, _alt, step, total, category) =>
+      `${category} adalah langkah ke-${step} dari ${total} dalam routine (urutan: Cleanser \u2192 Toner \u2192 Serum \u2192 Moisturizer \u2192 Sunscreen). Gunakan pagi & malam sesuai urutan ini -- khusus Sunscreen hanya di pagi hari.`,
+  },
+  {
+    q: "Apa alternatif yang lebih murah?",
+    getAnswer: (r, alternatives) => {
+      const cheaper = alternatives
+        .filter((a) => a.price_idr && r.price_idr && a.price_idr < r.price_idr)
+        .sort((a, b) => (a.price_idr ?? 0) - (b.price_idr ?? 0))[0];
+      if (cheaper) {
+        const priceStr = cheaper.price_idr ? `Rp${cheaper.price_idr.toLocaleString("id-ID")}` : "harga tidak tersedia";
+        return `Ada: ${cheaper.title} (${cheaper.brand}) seharga ${priceStr}, skor kecocokan ${cheaper.total_pct}%. Lebih murah, tapi cek dulu skornya masih sesuai kebutuhanmu.`;
+      }
+      return "Berdasarkan hasil rekomendasi saat ini, belum ada alternatif harga lebih murah dengan skor sebanding. Produk ini sudah pilihan terbaik di rentang budget kamu.";
+    },
+  },
+];
+
+function ProductCard({
+  category, r, alternatives, routineStep, routineTotal,
+}: {
+  category: string;
+  r: Recommendation;
+  alternatives: Recommendation[];
+  routineStep: number;
+  routineTotal: number;
+}) {
+  const [consultantOpen, setConsultantOpen] = useState(false);
+  const [activeQ, setActiveQ] = useState<string | null>(null);
   const Icon = category === "Sunscreen" ? Sun : Droplets;
   let badge = { label: "Alternative", bg: "bg-orange-50", fg: "text-orange-700" };
   if (r.total_pct >= 90) badge = { label: "Highly Recommended", bg: "bg-emerald-50", fg: "text-emerald-700" };
   else if (r.total_pct >= 75) badge = { label: "Good Match", bg: "bg-amber-50", fg: "text-amber-700" };
+
+  const activeAnswer = activeQ
+    ? SUGGESTED_QUESTIONS.find((sq) => sq.q === activeQ)?.getAnswer(r, alternatives, routineStep, routineTotal, category)
+    : null;
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -389,11 +462,16 @@ function ProductCard({ category, r }: { category: string; r: Recommendation }) {
         <p className="shrink-0 text-lg font-extrabold text-blue-600">{r.total_pct}%</p>
       </div>
       <Badge className={`mt-2.5 rounded-full ${badge.bg} ${badge.fg}`}>{badge.label}</Badge>
-      <button onClick={() => setOpen(!open)} className="mt-2.5 flex items-center gap-1 text-xs font-bold text-blue-600">
-        <Sparkles size={12} /> {open ? "Sembunyikan alasan" : "Mengapa direkomendasikan?"}
+
+      <button
+        onClick={() => { setConsultantOpen(!consultantOpen); setActiveQ(null); }}
+        className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-blue-600"
+      >
+        <MessageCircle size={13} /> {consultantOpen ? "Tutup AI Skin Consultant" : "\uD83D\uDCAC Tanya AI Skin Consultant"}
       </button>
+
       <AnimatePresence>
-        {open && (
+        {consultantOpen && (
           <motion.div
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
@@ -401,9 +479,34 @@ function ProductCard({ category, r }: { category: string; r: Recommendation }) {
             transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <p className="mt-2.5 whitespace-pre-line rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
-              {r.explanation || "Belum ada penjelasan detail untuk produk ini."}
-            </p>
+            <div className="mt-3 flex flex-col gap-1.5 border-t border-slate-100 pt-3">
+              {SUGGESTED_QUESTIONS.map((sq) => (
+                <button
+                  key={sq.q}
+                  onClick={() => setActiveQ(activeQ === sq.q ? null : sq.q)}
+                  className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition-colors ${
+                    activeQ === sq.q ? "border-blue-300 bg-blue-50 text-blue-700" : "border-slate-200 text-slate-600 hover:border-slate-300"
+                  }`}
+                >
+                  {sq.q}
+                </button>
+              ))}
+            </div>
+            <AnimatePresence>
+              {activeAnswer && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: "auto" }}
+                  exit={{ opacity: 0, height: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="overflow-hidden"
+                >
+                  <p className="mt-2.5 whitespace-pre-line rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
+                    {activeAnswer}
+                  </p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         )}
       </AnimatePresence>
