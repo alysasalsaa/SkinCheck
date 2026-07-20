@@ -473,15 +473,53 @@ function ProductCard({
 }) {
   const [consultantOpen, setConsultantOpen] = useState(false);
   const [activeQ, setActiveQ] = useState<string | null>(null);
+  const [llmAnswer, setLlmAnswer] = useState<string | null>(null);
+  const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
+  const [usedFallback, setUsedFallback] = useState(false);
   const [compareWith, setCompareWith] = useState<Recommendation | null>(null);
   const Icon = category === "Sunscreen" ? Sun : Droplets;
   let badge = { label: "Alternative", bg: "bg-orange-50", fg: "text-orange-700" };
   if (r.total_pct >= 90) badge = { label: "Highly Recommended", bg: "bg-success-light", fg: "text-success" };
   else if (r.total_pct >= 75) badge = { label: "Good Match", bg: "bg-warning-light", fg: "text-warning" };
 
-  const activeAnswer = activeQ
-    ? SUGGESTED_QUESTIONS.find((sq) => sq.q === activeQ)?.getAnswer(r, alternatives, routineStep, routineTotal, category)
-    : null;
+  async function askQuestion(q: string) {
+    if (activeQ === q) {
+      setActiveQ(null);
+      return;
+    }
+    setActiveQ(q);
+    setLlmAnswer(null);
+    setUsedFallback(false);
+    setIsLoadingAnswer(true);
+
+    const templateAnswer = SUGGESTED_QUESTIONS.find((sq) => sq.q === q)?.getAnswer(r, alternatives, routineStep, routineTotal, category) ?? "";
+
+    try {
+      const res = await fetch("/api/consultant", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          question: q,
+          recommendation: { name: r.title, brand: r.brand, category, score: r.total_pct },
+          comparison: alternatives.length > 0 ? { name: alternatives[0].title, brand: alternatives[0].brand, score: alternatives[0].total_pct } : null,
+          evidence: { matched_ingredients: r.matched_ingredients, avoided_ingredients: r.avoided_ingredients, evidence_level: r.evidence_level },
+          confidence: r.confidence_pct,
+          constraints: { pregnancy_status: r.pregnancy_safe_status, price_idr: r.price_idr, bpom_status: r.bpom_status },
+        }),
+      });
+      if (!res.ok) throw new Error("request failed");
+      const data = await res.json();
+      setLlmAnswer(data.answer || templateAnswer);
+      if (!data.answer) setUsedFallback(true);
+    } catch {
+      // LLM gagal (offline, quota, dsb) -- fallback ke jawaban template biar demo tetap jalan
+      setLlmAnswer(templateAnswer);
+      setUsedFallback(true);
+    } finally {
+      setIsLoadingAnswer(false);
+    }
+  }
+
 
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
@@ -546,7 +584,7 @@ function ProductCard({
               {SUGGESTED_QUESTIONS.map((sq) => (
                 <button
                   key={sq.q}
-                  onClick={() => setActiveQ(activeQ === sq.q ? null : sq.q)}
+                  onClick={() => askQuestion(sq.q)}
                   className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition-colors ${
                     activeQ === sq.q ? "border-primary bg-primary-light text-primary-dark" : "border-slate-200 text-slate-600 hover:border-slate-300"
                   }`}
@@ -555,8 +593,16 @@ function ProductCard({
                 </button>
               ))}
             </div>
+
+            {isLoadingAnswer && (
+              <div className="mt-2.5 flex items-center gap-2 rounded-lg bg-slate-50 p-3">
+                <Loader2 size={13} className="animate-spin text-primary" />
+                <p className="text-xs text-slate-500">Menyusun jawaban...</p>
+              </div>
+            )}
+
             <AnimatePresence>
-              {activeAnswer && (
+              {llmAnswer && !isLoadingAnswer && (
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: "auto" }}
@@ -565,7 +611,10 @@ function ProductCard({
                   className="overflow-hidden"
                 >
                   <p className="mt-2.5 whitespace-pre-line rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
-                    {activeAnswer}
+                    {llmAnswer}
+                  </p>
+                  <p className="mt-1.5 text-[10px] font-medium text-slate-400">
+                    {usedFallback ? "Jawaban dari sistem (mode offline)" : "Powered by Gemini 2.5 Flash"}
                   </p>
                 </motion.div>
               )}
