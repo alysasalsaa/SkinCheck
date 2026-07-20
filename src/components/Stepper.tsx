@@ -30,13 +30,13 @@ export function Stepper({ steps }: StepperProps) {
             className="flex flex-1 flex-col gap-3 rounded-2xl border border-slate-200 bg-white p-5"
           >
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-blue-600">0{i + 1}</span>
+              <span className="text-xs font-bold text-primary">0{i + 1}</span>
               <div className="h-px flex-1 bg-slate-100" />
             </div>
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
-              <step.icon size={18} className="text-blue-600" strokeWidth={2} />
+            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-light">
+              <step.icon size={18} className="text-primary" strokeWidth={2} />
             </div>
-            <h3 className="text-sm font-bold text-slate-900">{step.title}</h3>
+            <h3 className="text-sm font-bold text-ink">{step.title}</h3>
             <p className="text-xs text-slate-500 leading-relaxed">{step.description}</p>
           </motion.div>
           {i < steps.length - 1 && (

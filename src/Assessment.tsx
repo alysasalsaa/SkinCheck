@@ -162,7 +162,7 @@ export default function Assessment() {
     (step === 3 && hamil === null);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC]">
+    <div className="min-h-screen bg-[#FAFAF8]">
       <div className="mx-auto flex min-h-screen max-w-lg flex-col px-6">
         {screen === "wizard" && (
           <div className="flex flex-1 flex-col py-10">
@@ -183,7 +183,7 @@ export default function Assessment() {
                   <div
                     key={i}
                     className={`h-1.5 flex-1 rounded-full transition-colors duration-300 ${
-                      i <= step ? "bg-blue-600" : "bg-slate-200"
+                      i <= step ? "bg-primary" : "bg-slate-200"
                     }`}
                   />
                 ))}
@@ -204,7 +204,7 @@ export default function Assessment() {
               >
                 {step === 0 && (
                   <>
-                    <h2 className="mb-5 text-xl font-extrabold text-slate-900">Berapa usiamu?</h2>
+                    <h2 className="mb-5 text-xl font-extrabold text-ink">Berapa usiamu?</h2>
                     {AGE_BRACKETS.map((b) => (
                       <OptionButton key={b.label} selected={ageBracket === b.value} onClick={() => setAgeBracket(b.value)}>
                         {b.label}
@@ -214,7 +214,7 @@ export default function Assessment() {
                 )}
                 {step === 1 && (
                   <>
-                    <h2 className="mb-5 text-xl font-extrabold text-slate-900">
+                    <h2 className="mb-5 text-xl font-extrabold text-ink">
                       Bagaimana kondisi wajahmu 30 menit setelah cuci muka?
                     </h2>
                     {SKIN_TYPES.map((t) => (
@@ -226,7 +226,7 @@ export default function Assessment() {
                 )}
                 {step === 2 && (
                   <>
-                    <h2 className="mb-1 text-xl font-extrabold text-slate-900">Apa target utamamu?</h2>
+                    <h2 className="mb-1 text-xl font-extrabold text-ink">Apa target utamamu?</h2>
                     <p className="mb-4 text-sm text-slate-400">Boleh pilih lebih dari satu</p>
                     {CONDITIONS.map((c) => (
                       <OptionButton key={c} selected={conditions.includes(c)} onClick={() => toggleCondition(c)} multi>
@@ -237,7 +237,7 @@ export default function Assessment() {
                 )}
                 {step === 3 && (
                   <>
-                    <h2 className="mb-5 text-xl font-extrabold text-slate-900">
+                    <h2 className="mb-5 text-xl font-extrabold text-ink">
                       Apakah kamu sedang hamil atau menyusui?
                     </h2>
                     <OptionButton selected={hamil === true} onClick={() => setHamil(true)}>Ya</OptionButton>
@@ -246,7 +246,7 @@ export default function Assessment() {
                 )}
                 {step === 4 && (
                   <>
-                    <h2 className="mb-1 text-xl font-extrabold text-slate-900">Budget maksimal per produk?</h2>
+                    <h2 className="mb-1 text-xl font-extrabold text-ink">Budget maksimal per produk?</h2>
                     <p className="mb-4 text-sm text-slate-400">Opsional - kosongkan kalau nggak ada batasan</p>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">Rp</span>
@@ -255,7 +255,7 @@ export default function Assessment() {
                         placeholder="200"
                         value={budget}
                         onChange={(e) => setBudget(e.target.value)}
-                        className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-10 pr-14 text-base outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                        className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-10 pr-14 text-base outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">ribu</span>
                     </div>
@@ -270,7 +270,7 @@ export default function Assessment() {
               onClick={goNext}
               disabled={isNextDisabled}
               size="lg"
-              className="mt-8 w-full gap-2 rounded-xl bg-blue-600 text-white shadow-md shadow-blue-600/20 hover:bg-blue-700 disabled:opacity-40"
+              className="mt-8 w-full gap-2 rounded-xl bg-primary text-white shadow-md shadow-primary/20 hover:bg-primary-dark disabled:opacity-40"
             >
               {step === totalQuestions - 1 ? "Analisis Sekarang" : "Lanjut"} <ArrowRight size={16} />
             </Button>
@@ -279,17 +279,17 @@ export default function Assessment() {
 
         {screen === "loading" && (
           <div className="flex flex-1 flex-col items-center justify-center gap-8 py-10">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-blue-600">
+            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-primary">
               <Loader2 size={28} className="animate-spin text-white" />
             </div>
-            <p className="text-base font-bold text-slate-900">AI sedang menganalisis...</p>
+            <p className="text-base font-bold text-ink">AI sedang menganalisis...</p>
             <div className="flex w-full flex-col gap-4">
               {ANALYSIS_STEPS.map((s, i) => (
                 <div key={s} className="flex items-center gap-3 transition-opacity duration-300" style={{ opacity: i < analysisIdx ? 1 : 0.3 }}>
-                  <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${i < analysisIdx ? "bg-emerald-500" : "bg-slate-200"}`}>
+                  <div className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${i < analysisIdx ? "bg-success" : "bg-slate-200"}`}>
                     {i < analysisIdx && <Check size={13} className="text-white" strokeWidth={3} />}
                   </div>
-                  <span className={`text-sm font-medium ${i < analysisIdx ? "text-slate-900" : "text-slate-400"}`}>{s}</span>
+                  <span className={`text-sm font-medium ${i < analysisIdx ? "text-ink" : "text-slate-400"}`}>{s}</span>
                 </div>
               ))}
             </div>
@@ -302,8 +302,8 @@ export default function Assessment() {
               <div className="rounded-xl bg-red-50 p-4 text-sm text-red-600">{error} Coba lagi sebentar lagi ya.</div>
             ) : (
               <>
-                <p className="text-xs font-bold uppercase tracking-wide text-blue-600">Skin Report</p>
-                <h2 className="mt-1 text-2xl font-extrabold text-slate-900">Hasil analisis kulitmu</h2>
+                <p className="text-xs font-bold uppercase tracking-wide text-primary">Skin Report</p>
+                <h2 className="mt-1 text-2xl font-extrabold text-ink">Hasil analisis kulitmu</h2>
 
                 <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                   <ReportRow label="Tipe Kulit" value={skinType ?? "-"} />
@@ -312,7 +312,7 @@ export default function Assessment() {
                 </div>
 
                 {bestPick && (
-                  <div className="mt-4 rounded-2xl bg-slate-900 p-5">
+                  <div className="mt-4 rounded-2xl bg-ink p-5">
                     <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Recommendation Summary</p>
                     <div className="grid grid-cols-3 gap-3">
                       <div>
@@ -335,8 +335,8 @@ export default function Assessment() {
                           <p className="text-[10px] font-semibold">Evidence</p>
                         </div>
                         <span className={`mt-1.5 inline-block rounded-full px-2 py-0.5 text-[11px] font-bold ${
-                          bestPick.evidence_tier === "L1" ? "bg-emerald-500/20 text-emerald-400"
-                          : bestPick.evidence_tier === "L2" ? "bg-amber-500/20 text-amber-400"
+                          bestPick.evidence_tier === "L1" ? "bg-success/20 text-success"
+                          : bestPick.evidence_tier === "L2" ? "bg-gold/20 text-gold"
                           : "bg-slate-500/20 text-slate-400"
                         }`}>
                           {bestPick.evidence_tier === "L1" ? "High" : bestPick.evidence_tier === "L2" ? "Medium" : "Limited"}
@@ -349,7 +349,7 @@ export default function Assessment() {
                   </div>
                 )}
 
-                <h3 className="mb-3 mt-7 text-base font-bold text-slate-900">Rekomendasi Routine-mu</h3>
+                <h3 className="mb-3 mt-7 text-base font-bold text-ink">Rekomendasi Routine-mu</h3>
                 <div className="flex flex-col gap-3">
                   {CATEGORY_ORDER.filter((c) => byCategory[c]?.length).map((cat) => (
                     <ProductCard
@@ -385,13 +385,13 @@ function OptionButton({ children, selected, onClick, multi }: { children: React.
     <button
       onClick={onClick}
       className={`flex items-center justify-between rounded-xl border px-4 py-3.5 text-left text-[15px] font-semibold transition-colors ${
-        selected ? "border-blue-500 bg-blue-50 text-blue-700" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
+        selected ? "border-primary bg-primary-light text-primary-dark" : "border-slate-200 bg-white text-slate-700 hover:border-slate-300"
       }`}
     >
       {children}
       <span
         className={`ml-3 flex h-5 w-5 shrink-0 items-center justify-center border ${multi ? "rounded-[6px]" : "rounded-full"} ${
-          selected ? "border-blue-600 bg-blue-600" : "border-slate-300 bg-transparent"
+          selected ? "border-primary bg-primary" : "border-slate-300 bg-transparent"
         }`}
       >
         {selected && <Check size={12} className="text-white" strokeWidth={3} />}
@@ -404,7 +404,7 @@ function ReportRow({ label, value, last }: { label: string; value: string; last?
   return (
     <div className={`flex justify-between py-2.5 ${last ? "" : "border-b border-slate-100"}`}>
       <span className="text-[13px] font-medium text-slate-500">{label}</span>
-      <span className="max-w-[60%] text-right text-[13px] font-bold text-slate-900">{value}</span>
+      <span className="max-w-[60%] text-right text-[13px] font-bold text-ink">{value}</span>
     </div>
   );
 }
@@ -476,8 +476,8 @@ function ProductCard({
   const [compareWith, setCompareWith] = useState<Recommendation | null>(null);
   const Icon = category === "Sunscreen" ? Sun : Droplets;
   let badge = { label: "Alternative", bg: "bg-orange-50", fg: "text-orange-700" };
-  if (r.total_pct >= 90) badge = { label: "Highly Recommended", bg: "bg-emerald-50", fg: "text-emerald-700" };
-  else if (r.total_pct >= 75) badge = { label: "Good Match", bg: "bg-amber-50", fg: "text-amber-700" };
+  if (r.total_pct >= 90) badge = { label: "Highly Recommended", bg: "bg-success-light", fg: "text-success" };
+  else if (r.total_pct >= 75) badge = { label: "Good Match", bg: "bg-warning-light", fg: "text-warning" };
 
   const activeAnswer = activeQ
     ? SUGGESTED_QUESTIONS.find((sq) => sq.q === activeQ)?.getAnswer(r, alternatives, routineStep, routineTotal, category)
@@ -487,14 +487,14 @@ function ProductCard({
     <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100">
-          <Icon size={16} className="text-blue-600" />
+          <Icon size={16} className="text-primary" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{category}</p>
-          <p className="truncate text-sm font-bold text-slate-900">{r.title}</p>
+          <p className="truncate text-sm font-bold text-ink">{r.title}</p>
           <p className="text-xs text-slate-500">{r.brand}</p>
         </div>
-        <p className="shrink-0 text-lg font-extrabold text-blue-600">{r.total_pct}%</p>
+        <p className="shrink-0 text-lg font-extrabold text-primary">{r.total_pct}%</p>
       </div>
       <Badge className={`mt-2.5 rounded-full ${badge.bg} ${badge.fg}`}>{badge.label}</Badge>
 
@@ -528,7 +528,7 @@ function ProductCard({
 
       <button
         onClick={() => { setConsultantOpen(!consultantOpen); setActiveQ(null); }}
-        className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-blue-600"
+        className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-primary"
       >
         <MessageCircle size={13} /> {consultantOpen ? "Tutup AI Skin Consultant" : "Tanya AI Skin Consultant"}
       </button>
@@ -548,7 +548,7 @@ function ProductCard({
                   key={sq.q}
                   onClick={() => setActiveQ(activeQ === sq.q ? null : sq.q)}
                   className={`rounded-lg border px-3 py-2 text-left text-xs font-medium transition-colors ${
-                    activeQ === sq.q ? "border-blue-300 bg-blue-50 text-blue-700" : "border-slate-200 text-slate-600 hover:border-slate-300"
+                    activeQ === sq.q ? "border-primary bg-primary-light text-primary-dark" : "border-slate-200 text-slate-600 hover:border-slate-300"
                   }`}
                 >
                   {sq.q}
@@ -676,7 +676,7 @@ function ComparePanel({
               key={alt.id}
               onClick={() => onChangeB(alt)}
               className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
-                alt.id === b.id ? "bg-slate-900 text-white" : "bg-white text-slate-500 border border-slate-200"
+                alt.id === b.id ? "bg-ink text-white" : "bg-white text-slate-500 border border-slate-200"
               }`}
             >
               {alt.brand}
@@ -690,12 +690,12 @@ function ComparePanel({
         {[a, b].map((p) => {
           const isWinner = p.id === winner.id && !isFullyIdentical;
           return (
-            <div key={p.id} className={`rounded-lg px-2.5 py-2 text-center ${isWinner ? "bg-emerald-100" : "bg-white border border-slate-200"}`}>
-              <p className={`flex items-center justify-center gap-1 text-[10px] font-bold ${isWinner ? "text-emerald-700" : "text-slate-500"}`}>
+            <div key={p.id} className={`rounded-lg px-2.5 py-2 text-center ${isWinner ? "bg-success-light" : "bg-white border border-slate-200"}`}>
+              <p className={`flex items-center justify-center gap-1 text-[10px] font-bold ${isWinner ? "text-success" : "text-slate-500"}`}>
                 {isFullyIdentical ? <Scale size={11} /> : isWinner ? <Trophy size={11} /> : <TriangleAlert size={11} />}
                 {isFullyIdentical ? "Setara" : isWinner ? "Recommended" : "Alternative"}
               </p>
-              <p className="truncate text-xs font-bold text-slate-900">{p.brand}</p>
+              <p className="truncate text-xs font-bold text-ink">{p.brand}</p>
               <p className="text-[10px] text-slate-400">
                 {isWinner ? `Confidence ${p.confidence_pct}%` : `Overall Score ${p.total_pct}%`}
               </p>
@@ -705,9 +705,9 @@ function ComparePanel({
       </div>
 
       <div className="mt-3 grid grid-cols-3 items-center gap-2 text-center">
-        <p className="truncate text-xs font-bold text-slate-900">{a.brand}</p>
+        <p className="truncate text-xs font-bold text-ink">{a.brand}</p>
         <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">vs</p>
-        <p className="truncate text-xs font-bold text-slate-900">{b.brand}</p>
+        <p className="truncate text-xs font-bold text-ink">{b.brand}</p>
       </div>
 
       <div className="mt-2.5 flex flex-col gap-2">
@@ -715,7 +715,7 @@ function ComparePanel({
           <div key={row.label} className="grid grid-cols-3 items-center gap-2">
             <div className="flex items-center gap-1.5">
               <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-200">
-                <div className="h-full rounded-full bg-blue-500" style={{ width: `${Math.max(0, (row.av / row.max) * 100)}%` }} />
+                <div className="h-full rounded-full bg-primary" style={{ width: `${Math.max(0, (row.av / row.max) * 100)}%` }} />
               </div>
               <span className="w-8 text-right text-[11px] font-bold text-slate-700">{row.av}</span>
             </div>
@@ -742,16 +742,16 @@ function ComparePanel({
             ].map((f) => (
               <div key={f.label} className="flex items-center justify-between">
                 <span className="text-[11px] text-slate-500">{f.label}</span>
-                <span className="text-[11px] font-bold text-blue-600">{"+".repeat(f.pip)}</span>
+                <span className="text-[11px] font-bold text-primary">{"+".repeat(f.pip)}</span>
               </div>
             ))}
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-slate-500">BPOM</span>
-              <Check size={12} className="text-emerald-500" />
+              <Check size={12} className="text-success" />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-slate-500">Budget</span>
-              <Check size={12} className="text-emerald-500" />
+              <Check size={12} className="text-success" />
             </div>
             <div className="flex items-center justify-between">
               <span className="text-[11px] text-slate-500">Pregnancy</span>
@@ -761,28 +761,28 @@ function ComparePanel({
         </div>
       )}
 
-      <div className="mt-3.5 rounded-lg bg-emerald-50 p-3">
+      <div className="mt-3.5 rounded-lg bg-success-light p-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <CircleCheck size={15} className="shrink-0 text-emerald-600" />
-            <p className="text-[11px] font-bold text-emerald-800">AI Verdict</p>
+            <CircleCheck size={15} className="shrink-0 text-success" />
+            <p className="text-[11px] font-bold text-success">AI Verdict</p>
           </div>
-          <span className="text-[10px] font-bold text-emerald-600">Confidence {winner.confidence_pct}%</span>
+          <span className="text-[10px] font-bold text-success">Confidence {winner.confidence_pct}%</span>
         </div>
-        <p className="mt-1.5 text-xs leading-relaxed text-emerald-700">{verdictText}</p>
+        <p className="mt-1.5 text-xs leading-relaxed text-success">{verdictText}</p>
       </div>
 
       {!isFullyIdentical && tradeoffs.length > 0 && (
-        <div className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-3">
-          <TriangleAlert size={15} className="mt-0.5 shrink-0 text-amber-600" />
+        <div className="mt-2 flex items-start gap-2 rounded-lg bg-warning-light p-3">
+          <TriangleAlert size={15} className="mt-0.5 shrink-0 text-warning" />
           <div>
-            <p className="text-[11px] font-bold text-amber-800">Mengapa bukan {loser.brand}?</p>
-            <p className="mt-0.5 text-xs leading-relaxed text-amber-700">
+            <p className="text-[11px] font-bold text-warning">Mengapa bukan {loser.brand}?</p>
+            <p className="mt-0.5 text-xs leading-relaxed text-warning">
               {loser.brand} tetap merupakan alternatif yang baik, namun belum menjadi pilihan utama karena:
             </p>
             <ul className="mt-1 flex flex-col gap-0.5">
               {tradeoffs.map((t) => (
-                <li key={t} className="text-xs leading-relaxed text-amber-700">&bull; {t}</li>
+                <li key={t} className="text-xs leading-relaxed text-warning">&bull; {t}</li>
               ))}
             </ul>
           </div>

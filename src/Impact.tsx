@@ -54,13 +54,13 @@ const BENEFITS = [
 
 export default function Impact() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
+    <div className="min-h-screen bg-[#FAFAF8] text-ink">
       <Navbar />
 
       {/* ===== HERO ===== */}
       <section className="mx-auto max-w-[1200px] px-6 py-16 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <span className="text-xs font-bold uppercase tracking-wider text-blue-600">AI Impact</span>
+          <span className="text-xs font-bold uppercase tracking-wider text-primary">AI Impact</span>
           <h1 className="mx-auto mt-2 max-w-2xl text-3xl font-extrabold leading-tight md:text-4xl">
             Bukan Sekadar Rekomendasi &mdash; Dampak Nyata
           </h1>
@@ -94,12 +94,12 @@ export default function Impact() {
           </div>
 
           {/* Sesudah */}
-          <div className="rounded-2xl border border-emerald-100 bg-emerald-50/50 p-6">
+          <div className="rounded-2xl border border-success-light bg-success-light/50 p-6">
             <div className="mb-4 flex items-center gap-2">
-              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100">
-                <Check size={14} className="text-emerald-600" />
+              <div className="flex h-7 w-7 items-center justify-center rounded-full bg-success-light">
+                <Check size={14} className="text-success" />
               </div>
-              <span className="text-sm font-bold text-emerald-700">Sesudah</span>
+              <span className="text-sm font-bold text-success">Sesudah</span>
             </div>
             <div className="flex flex-col gap-2.5">
               {["Skin Assessment", "AI Recommendation", "Explainable AI", "Produk Lokal Terverifikasi", "Lebih Aman & Tepat Sasaran"].map((t, i, arr) => (
@@ -107,7 +107,7 @@ export default function Impact() {
                   <div className="flex items-center gap-2 rounded-lg bg-white p-3 text-sm font-medium text-slate-700">
                     {t}
                   </div>
-                  {i < arr.length - 1 && <ArrowDown size={14} className="mx-auto my-1 text-emerald-400" />}
+                  {i < arr.length - 1 && <ArrowDown size={14} className="mx-auto my-1 text-success" />}
                 </div>
               ))}
             </div>
@@ -178,14 +178,14 @@ export default function Impact() {
         <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
           {BENEFITS.map((b, i) => (
             <motion.div key={b.title} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-60px" }} transition={{ duration: 0.4, delay: i * 0.1 }} className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50">
-                <b.icon size={20} className="text-blue-600" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-primary-light">
+                <b.icon size={20} className="text-primary" />
               </div>
               <h3 className="mt-4 text-base font-bold">{b.title}</h3>
               <ul className="mt-3 flex flex-col gap-2">
                 {b.items.map((item) => (
                   <li key={item} className="flex items-start gap-2 text-sm text-slate-500">
-                    <Check size={14} className="mt-0.5 shrink-0 text-emerald-500" />
+                    <Check size={14} className="mt-0.5 shrink-0 text-success" />
                     {item}
                   </li>
                 ))}

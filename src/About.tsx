@@ -31,15 +31,15 @@ const TEAM = [
 
 export default function About() {
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
+    <div className="min-h-screen bg-[#FAFAF8] text-ink">
       <Navbar />
 
       <section className="mx-auto max-w-[1200px] px-6 py-16 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50">
-            <Users size={22} className="text-blue-600" />
+          <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-primary-light">
+            <Users size={22} className="text-primary" />
           </div>
-          <span className="mt-4 block text-xs font-bold uppercase tracking-wider text-blue-600">Tim</span>
+          <span className="mt-4 block text-xs font-bold uppercase tracking-wider text-primary">Tim</span>
           <h1 className="mx-auto mt-2 max-w-2xl text-3xl font-extrabold leading-tight md:text-4xl">
             Tim di Balik SkinCheck
           </h1>
@@ -61,11 +61,11 @@ export default function About() {
               transition={{ duration: 0.4, delay: i * 0.1 }}
               className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
             >
-              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-50">
-                <member.icon size={22} className="text-blue-600" />
+              <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-light">
+                <member.icon size={22} className="text-primary" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-900">{member.name}</h3>
+                <h3 className="text-base font-bold text-ink">{member.name}</h3>
                 <p className="text-xs text-slate-400">{member.nim} &middot; {member.prodi}</p>
               </div>
             </motion.div>

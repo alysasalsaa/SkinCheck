@@ -22,11 +22,11 @@ export function SectionTitle({ eyebrow, title, subtitle, align = "center" }: Sec
       className={`flex flex-col gap-3 ${align === "center" ? "items-center text-center" : "items-start text-left"}`}
     >
       {eyebrow && (
-        <span className="text-xs font-semibold uppercase tracking-wider text-blue-600">
+        <span className="text-xs font-semibold uppercase tracking-wider text-primary">
           {eyebrow}
         </span>
       )}
-      <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight">
+      <h2 className="text-2xl md:text-3xl font-extrabold text-ink tracking-tight">
         {title}
       </h2>
       {subtitle && (

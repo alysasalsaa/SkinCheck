@@ -22,11 +22,11 @@ export function StatCard({ icon: Icon, value, label, delay = 0 }: StatCardProps)
       whileHover={{ y: -4 }}
       className="flex items-start gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3.5 shadow-sm"
     >
-      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-blue-50">
-        <Icon size={18} className="text-blue-600" strokeWidth={2} />
+      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary-light">
+        <Icon size={18} className="text-primary" strokeWidth={2} />
       </div>
       <div className="min-w-0">
-        <p className="text-lg font-extrabold text-slate-900 leading-none">{value}</p>
+        <p className="text-lg font-extrabold text-ink leading-none">{value}</p>
         <p className="text-xs leading-snug text-slate-500 mt-1">{label}</p>
       </div>
     </motion.div>

@@ -27,13 +27,13 @@ export default function Landing() {
   }, [location]);
 
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 overflow-x-hidden">
+    <div className="min-h-screen bg-[#FAFAF8] text-ink overflow-x-hidden">
       {/* ================= HERO ================= */}
       <section className="relative">
         {/* Background: mesh gradient tipis, bukan putih polos */}
         <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -top-40 -left-32 h-[420px] w-[420px] rounded-full bg-blue-400/20 blur-[100px]" />
-          <div className="absolute top-20 -right-24 h-[380px] w-[380px] rounded-full bg-emerald-400/15 blur-[100px]" />
+          <div className="absolute -top-40 -left-32 h-[420px] w-[420px] rounded-full bg-primary/20 blur-[100px]" />
+          <div className="absolute top-20 -right-24 h-[380px] w-[380px] rounded-full bg-success/15 blur-[100px]" />
         </div>
 
         <Navbar />
@@ -46,11 +46,11 @@ export default function Landing() {
             transition={{ duration: 0.6, ease: "easeOut" }}
             className="flex flex-col items-start gap-6"
           >
-            <Badge className="gap-1.5 rounded-full bg-blue-50 px-3 py-1.5 text-blue-700 hover:bg-blue-50">
+            <Badge className="gap-1.5 rounded-full bg-primary-light px-3 py-1.5 text-primary-dark hover:bg-primary-light">
               <Sparkles size={13} /> Powered by Explainable AI
             </Badge>
 
-            <h1 className="text-[2.25rem] md:text-[3rem] font-extrabold leading-[1.1] tracking-tight text-slate-900">
+            <h1 className="text-[2.25rem] md:text-[3rem] font-extrabold leading-[1.1] tracking-tight text-ink">
               Temukan Skincare Lokal<br />yang Tepat untuk Kulitmu
             </h1>
 
@@ -60,7 +60,7 @@ export default function Landing() {
             </p>
 
             <div className="flex flex-wrap items-center gap-3">
-              <Button onClick={() => navigate("/assessment")} size="lg" className="gap-2 rounded-xl bg-blue-600 px-6 text-white shadow-md shadow-blue-600/20 transition-transform hover:scale-[1.02] hover:bg-blue-700">
+              <Button onClick={() => navigate("/assessment")} size="lg" className="gap-2 rounded-xl bg-primary px-6 text-white shadow-md shadow-primary/20 transition-transform hover:scale-[1.02] hover:bg-primary-dark">
                 Mulai Analisis <ArrowRight size={16} />
               </Button>
               <Button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })} size="lg" variant="outline" className="rounded-xl border-slate-300 px-6 text-slate-700 transition-transform hover:scale-[1.02]">
@@ -90,17 +90,17 @@ export default function Landing() {
             >
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Skin Report</span>
-                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-emerald-100">
-                  <ShieldCheck size={14} className="text-emerald-600" />
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-success-light">
+                  <ShieldCheck size={14} className="text-success" />
                 </span>
               </div>
 
               <div className="mt-6 flex items-end gap-2">
-                <span className="text-5xl font-extrabold text-blue-600">95%</span>
+                <span className="text-5xl font-extrabold text-primary">95%</span>
                 <span className="mb-1.5 text-sm font-medium text-slate-500">Skin Match</span>
               </div>
 
-              <div className="mt-1 flex items-center gap-1 text-amber-500">
+              <div className="mt-1 flex items-center gap-1 text-gold">
                 {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={13} fill="currentColor" strokeWidth={0} />)}
                 <span className="ml-1 text-xs font-medium text-slate-400">Evidence Level</span>
               </div>
@@ -110,9 +110,9 @@ export default function Landing() {
               <div className="mt-5 flex items-center justify-between">
                 <div>
                   <p className="text-xs text-slate-400">AI Confidence</p>
-                  <p className="text-xl font-bold text-slate-900">94%</p>
+                  <p className="text-xl font-bold text-ink">94%</p>
                 </div>
-                <Badge className="rounded-full bg-emerald-50 text-emerald-700 hover:bg-emerald-50">
+                <Badge className="rounded-full bg-success-light text-success hover:bg-success-light">
                   Routine Ready
                 </Badge>
               </div>
@@ -124,7 +124,7 @@ export default function Landing() {
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
               className="absolute -bottom-6 -left-8 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-lg"
             >
-              <FlaskConical size={16} className="text-blue-600" />
+              <FlaskConical size={16} className="text-primary" />
               <div>
                 <p className="text-[11px] text-slate-400 leading-none">Ingredient Matched</p>
                 <p className="text-sm font-bold leading-none mt-1">Niacinamide + Ceramide</p>
@@ -208,7 +208,7 @@ export default function Landing() {
               </div>
               <div>
                 <span className="text-xs font-bold uppercase tracking-wide text-slate-400">{sdg.tag}</span>
-                <h3 className="mt-1 text-base font-bold text-slate-900">{sdg.title}</h3>
+                <h3 className="mt-1 text-base font-bold text-ink">{sdg.title}</h3>
                 <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{sdg.desc}</p>
               </div>
             </motion.div>
@@ -266,8 +266,8 @@ export default function Landing() {
               transition={{ duration: 0.4, delay: i * 0.06 }}
               className="flex flex-col items-start gap-3 rounded-xl border border-slate-200 bg-white p-5"
             >
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-50">
-                <Icon size={18} className="text-blue-600" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary-light">
+                <Icon size={18} className="text-primary" />
               </div>
               <p className="text-sm font-semibold text-slate-800">{label}</p>
             </motion.div>
