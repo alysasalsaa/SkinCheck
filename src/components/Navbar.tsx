@@ -7,15 +7,16 @@ const NAV_LINKS = [
   { label: "Home", to: "/" },
   { label: "Technology", to: "/#technology" },
   { label: "Cara Kerja", to: "/#how-it-works" },
+  { label: "Ingredients", to: "/ingredients" },
   { label: "Impact", to: "/impact" },
   { label: "About", to: "/about" },
 ];
 
 /**
  * Alasan UX: navbar konsisten di semua halaman bikin user nggak "kehilangan
- * arah" pas pindah dari Landing ke Impact/About -- mereka selalu tau cara
- * balik atau lanjut ke Assessment dari mana aja. Menu hamburger di mobile
- * penting -- tanpa itu, link navigasi sama sekali nggak bisa diakses di HP.
+ * arah" pas pindah halaman -- mereka selalu tau cara balik atau lanjut ke
+ * Assessment dari mana aja. Menu hamburger di mobile penting -- tanpa itu,
+ * link navigasi sama sekali nggak bisa diakses di HP.
  */
 export function Navbar() {
   const navigate = useNavigate();
@@ -68,7 +69,6 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* Mobile dropdown menu */}
       {mobileOpen && (
         <div className="mt-3 flex flex-col gap-1 rounded-xl border border-slate-200 bg-white p-2 shadow-lg md:hidden">
           {NAV_LINKS.map((link) => (

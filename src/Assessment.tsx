@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Loader2,
   Droplets, Sun, RotateCcw, MessageCircle, GitCompare, TriangleAlert, CircleCheck,
-  Target, Brain, FileText, Trophy, Scale,
+  Target, Brain, FileText, Trophy, Scale, Workflow,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -359,6 +359,7 @@ export default function Assessment() {
                       alternatives={byCategory[cat].slice(1)}
                       routineStep={CATEGORY_ORDER.indexOf(cat) + 1}
                       routineTotal={CATEGORY_ORDER.length}
+                      userInput={{ skinType, conditions, hamil, budget }}
                     />
                   ))}
                   {!results?.length && (
@@ -463,14 +464,16 @@ const SUGGESTED_QUESTIONS: QA[] = [
 ];
 
 function ProductCard({
-  category, r, alternatives, routineStep, routineTotal,
+  category, r, alternatives, routineStep, routineTotal, userInput,
 }: {
   category: string;
   r: Recommendation;
   alternatives: Recommendation[];
   routineStep: number;
   routineTotal: number;
+  userInput: { skinType: string | null; conditions: string[]; hamil: boolean | null; budget: string };
 }) {
+  const [decisionOpen, setDecisionOpen] = useState(false);
   const [consultantOpen, setConsultantOpen] = useState(false);
   const [activeQ, setActiveQ] = useState<string | null>(null);
   const [llmAnswer, setLlmAnswer] = useState<string | null>(null);
@@ -566,6 +569,17 @@ function ProductCard({
       </AnimatePresence>
 
       <button
+        onClick={() => setDecisionOpen(true)}
+        className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-slate-600"
+      >
+        <Workflow size={13} /> Lihat Proses Keputusan AI
+      </button>
+
+      {decisionOpen && (
+        <DecisionProcessDrawer r={r} userInput={userInput} onClose={() => setDecisionOpen(false)} />
+      )}
+
+      <button
         onClick={() => { setConsultantOpen(!consultantOpen); setActiveQ(null); }}
         className="mt-2.5 flex items-center gap-1.5 text-xs font-bold text-primary"
       >
@@ -612,7 +626,7 @@ function ProductCard({
                   className="overflow-hidden"
                 >
                   <p className="mt-2.5 whitespace-pre-line rounded-lg bg-slate-50 p-3 text-xs leading-relaxed text-slate-600">
-                    {llmAnswer}
+                    <TypewriterText text={llmAnswer} />
                   </p>
                   <p className="mt-1.5 text-[10px] font-medium text-slate-400">
                     {usedFallback ? "Jawaban dari sistem (mode offline)" : "Powered by Gemini"}
@@ -838,6 +852,136 @@ function ComparePanel({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+/** Efek teks muncul kayak diketik -- bikin jawaban LLM kerasa "hidup", bukan dump teks langsung. */
+function TypewriterText({ text, speed = 12 }: { text: string; speed?: number }) {
+  const [shown, setShown] = useState("");
+  useEffect(() => {
+    setShown("");
+    let i = 0;
+    const interval = setInterval(() => {
+      i += 2; // 2 karakter per tick biar nggak kelamaan buat jawaban panjang
+      setShown(text.slice(0, i));
+      if (i >= text.length) clearInterval(interval);
+    }, speed);
+    return () => clearInterval(interval);
+  }, [text, speed]);
+  return <>{shown}</>;
+}
+
+/**
+ * AI Decision Process -- drawer yang nunjukin pipeline keputusan sesungguhnya,
+ * pakai angka ASLI dari hasil Recommendation Engine v6 (bukan animasi generik
+ * kayak loading screen). Tiap tahap muncul berurutan biar kerasa alurnya.
+ */
+function DecisionProcessDrawer({
+  r, userInput, onClose,
+}: {
+  r: Recommendation;
+  userInput: { skinType: string | null; conditions: string[]; hamil: boolean | null; budget: string };
+  onClose: () => void;
+}) {
+  const [visibleSteps, setVisibleSteps] = useState(0);
+  const steps = [
+    {
+      title: "Input",
+      content: (
+        <div className="flex flex-col gap-1 text-xs text-slate-600">
+          <p>Tipe Kulit: <b>{userInput.skinType ?? "-"}</b></p>
+          <p>Concern: <b>{userInput.conditions.length ? userInput.conditions.join(", ") : "Tidak ada spesifik"}</b></p>
+          <p>Budget: <b>{userInput.budget ? `Rp${parseInt(userInput.budget, 10).toLocaleString("id-ID")}rb` : "Tidak dibatasi"}</b></p>
+          <p>Hamil/Menyusui: <b>{userInput.hamil ? "Ya" : "Tidak"}</b></p>
+        </div>
+      ),
+    },
+    {
+      title: "Constraint Engine",
+      content: <p className="text-xs text-slate-600">Produk ini lolos semua syarat wajib: <b className="text-success">BPOM terdaftar, sesuai budget, aman untuk profil kehamilan kamu.</b></p>,
+    },
+    {
+      title: "Evidence-Aware Engine",
+      content: (
+        <div className="flex items-center gap-2">
+          <span className={`rounded-full px-2 py-0.5 text-[11px] font-bold ${
+            r.evidence_tier === "L1" ? "bg-success-light text-success" : r.evidence_tier === "L2" ? "bg-warning-light text-warning" : "bg-slate-100 text-slate-500"
+          }`}>
+            {r.evidence_tier === "L1" ? "High" : r.evidence_tier === "L2" ? "Medium" : "Limited"}
+          </span>
+          <span className="text-xs text-slate-500">({r.evidence_level})</span>
+        </div>
+      ),
+    },
+    {
+      title: "Synergy Check",
+      content: <p className="text-xs text-slate-600">Skor sinergi kandungan: <b className={r.synergy_pct >= 0 ? "text-success" : "text-warning"}>{r.synergy_pct > 0 ? `+${r.synergy_pct}` : r.synergy_pct}</b></p>,
+    },
+    {
+      title: "Ranking",
+      content: <p className="text-xl font-extrabold text-primary">{r.total_pct}%</p>,
+    },
+    {
+      title: "Recommendation",
+      content: <p className="text-sm font-bold text-ink">{r.title} <span className="font-normal text-slate-500">({r.brand})</span></p>,
+    },
+  ];
+
+  useEffect(() => {
+    setVisibleSteps(0);
+    const interval = setInterval(() => {
+      setVisibleSteps((v) => {
+        if (v >= steps.length) {
+          clearInterval(interval);
+          return v;
+        }
+        return v + 1;
+      });
+    }, 450);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={onClose}>
+      <motion.div
+        initial={{ y: 40, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.25 }}
+        onClick={(e) => e.stopPropagation()}
+        className="max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-t-3xl bg-white p-6 sm:rounded-3xl"
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h3 className="text-base font-bold text-ink">Proses Keputusan AI</h3>
+          <button onClick={onClose} className="text-slate-400">
+            <RotateCcw size={16} className="rotate-45" />
+          </button>
+        </div>
+
+        <div className="flex flex-col gap-3">
+          {steps.map((step, i) => (
+            <AnimatePresence key={step.title}>
+              {i < visibleSteps && (
+                <motion.div
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-5 w-5 items-center justify-center rounded-full bg-success">
+                      <Check size={11} className="text-white" strokeWidth={3} />
+                    </div>
+                    <p className="text-xs font-bold uppercase tracking-wide text-slate-400">{step.title}</p>
+                  </div>
+                  <div className="ml-7 mt-1.5 rounded-lg bg-slate-50 p-3">{step.content}</div>
+                  {i < steps.length - 1 && <div className="ml-2.5 mt-1.5 h-3 w-px bg-slate-200" />}
+                </motion.div>
+              )}
+            </AnimatePresence>
+          ))}
+        </div>
+      </motion.div>
     </div>
   );
 }
