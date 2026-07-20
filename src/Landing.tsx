@@ -1,9 +1,11 @@
+import { useEffect } from "react";
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Sparkles, ShieldCheck, BadgeCheck, ArrowRight, Database,
   Eye, MessageSquareText, Droplets, Target, FlaskConical,
   Wallet, HeartPulse, ClipboardCheck, ClipboardList, BrainCog,
+  Globe2, Recycle, Factory,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -11,9 +13,19 @@ import { SectionTitle } from "@/components/SectionTitle";
 import { StatCard } from "@/components/StatCard";
 import { FeatureCard } from "@/components/FeatureCard";
 import { Stepper } from "@/components/Stepper";
+import { Navbar } from "@/components/Navbar";
 
 export default function Landing() {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const el = document.getElementById(location.hash.replace("#", ""));
+      if (el) setTimeout(() => el.scrollIntoView({ behavior: "smooth" }), 100);
+    }
+  }, [location]);
+
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900 overflow-x-hidden">
       {/* ================= HERO ================= */}
@@ -24,15 +36,7 @@ export default function Landing() {
           <div className="absolute top-20 -right-24 h-[380px] w-[380px] rounded-full bg-emerald-400/15 blur-[100px]" />
         </div>
 
-        <nav className="relative mx-auto flex max-w-[1200px] items-center justify-between px-6 py-6">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600">
-              <Sparkles size={16} className="text-white" strokeWidth={2.5} />
-            </div>
-            <span className="font-extrabold text-sm tracking-tight">SkinMatch AI</span>
-          </div>
-          <Button variant="ghost" size="sm" className="text-slate-600">Cara Kerja</Button>
-        </nav>
+        <Navbar />
 
         <div className="relative mx-auto grid max-w-[1200px] grid-cols-1 items-center gap-16 px-6 pb-24 pt-8 md:grid-cols-2 md:pt-16">
           {/* Kiri: copy + CTA */}
@@ -131,9 +135,7 @@ export default function Landing() {
       </section>
 
       {/* ================= WHY DIFFERENT ================= */}
-      <section className="mx-auto max-w-[1200px] px-6 py-20 md:py-28">
-        <SectionTitle
-          eyebrow="Kenapa Berbeda"
+      <section id="technology" className="mx-auto max-w-[1200px] px-6 py-20 md:py-28">
           title="Mengapa AI Kami Berbeda"
           subtitle="Bukan sekadar chatbot yang menjawab pertanyaan &mdash; ini sistem yang benar-benar menganalisis sebelum merekomendasikan."
         />
@@ -156,6 +158,66 @@ export default function Landing() {
             title="Explainable Recommendation"
             description="Bukan cuma daftar produk. Sistem menjelaskan kandungan apa yang cocok dan kenapa, dalam bahasa yang mudah dipahami."
           />
+        </div>
+      </section>
+
+      {/* ================= SDG IMPACT ================= */}
+      <section className="mx-auto max-w-[1200px] px-6 py-20 md:py-28">
+        <SectionTitle
+          eyebrow="🌍 Dampak terhadap SDGs"
+          title="Mendukung Tujuan Pembangunan Berkelanjutan"
+          subtitle="Bukan sekadar proyek teknologi — dirancang untuk berkontribusi nyata terhadap Sustainable Development Goals."
+        />
+
+        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+          {[
+            {
+              icon: HeartPulse,
+              color: "bg-[#4C9F38]",
+              tag: "SDG 3",
+              title: "Good Health and Well-being",
+              desc: "Membantu masyarakat memilih skincare yang aman, sesuai kondisi kulit, dan terverifikasi BPOM.",
+            },
+            {
+              icon: Recycle,
+              color: "bg-[#BF8B2E]",
+              tag: "SDG 12",
+              title: "Responsible Consumption",
+              desc: "Mengurangi pembelian skincare berdasarkan tren media sosial melalui rekomendasi berbasis evidence.",
+            },
+            {
+              icon: Factory,
+              color: "bg-[#FD6925]",
+              tag: "SDG 9",
+              title: "Industry & Innovation",
+              desc: "Mendukung pemanfaatan produk skincare lokal Indonesia melalui teknologi AI dan Explainable Recommendation.",
+            },
+          ].map((sdg, i) => (
+            <motion.div
+              key={sdg.tag}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-60px" }}
+              transition={{ duration: 0.45, delay: i * 0.12 }}
+              className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-6 shadow-sm"
+            >
+              <div className={`flex h-11 w-11 items-center justify-center rounded-xl ${sdg.color}`}>
+                <sdg.icon size={20} className="text-white" strokeWidth={2} />
+              </div>
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wide text-slate-400">{sdg.tag}</span>
+                <h3 className="mt-1 text-base font-bold text-slate-900">{sdg.title}</h3>
+                <p className="mt-1.5 text-sm leading-relaxed text-slate-500">{sdg.desc}</p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatCard icon={BadgeCheck} value="195+" label="Produk Lokal" delay={0.1} />
+          <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.16} />
+          <StatCard icon={Database} value="9" label="Brand Lokal" delay={0.22} />
+          <StatCard icon={Globe2} value="3" label="SDGs Didukung" delay={0.28} />
         </div>
       </section>
 
