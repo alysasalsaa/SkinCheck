@@ -44,14 +44,18 @@ Jawab pertanyaan di atas berdasarkan context JSON ini, dilengkapi pengetahuan um
 
   try {
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: userPrompt }] }],
           systemInstruction: { parts: [{ text: systemPrompt }] },
-          generationConfig: { temperature: 0.4, maxOutputTokens: 500 },
+          generationConfig: {
+            temperature: 0.4,
+            maxOutputTokens: 500,
+            thinkingConfig: { thinkingBudget: 0 },
+          },
         }),
       }
     );
