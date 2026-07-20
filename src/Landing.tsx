@@ -135,31 +135,36 @@ export default function Landing() {
       </section>
 
       {/* ================= WHY DIFFERENT ================= */}
-      <section id="technology" className="mx-auto max-w-[1200px] px-6 py-20 md:py-28">
-          title="Mengapa AI Kami Berbeda"
-          subtitle="Bukan sekadar chatbot yang menjawab pertanyaan &mdash; ini sistem yang benar-benar menganalisis sebelum merekomendasikan."
-        />
-        <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
-          <FeatureCard
-            index={0}
-            icon={Database}
-            title="Knowledge Base"
-            description="195 produk skincare lokal, kandungan aktif, dan status BPOM terverifikasi — bukan data yang diketik asal."
-          />
-          <FeatureCard
-            index={1}
-            icon={Eye}
-            title="Evidence-Aware AI"
-            description="Tiap rekomendasi punya Evidence Level — transparan soal seberapa kuat data di baliknya, bukan menyembunyikan ketidakpastian."
-          />
-          <FeatureCard
-            index={2}
-            icon={MessageSquareText}
-            title="Explainable Recommendation"
-            description="Bukan cuma daftar produk. Sistem menjelaskan kandungan apa yang cocok dan kenapa, dalam bahasa yang mudah dipahami."
-          />
-        </div>
-      </section>
+<section
+  id="technology"
+  className="mx-auto max-w-[1200px] px-6 py-20 md:py-28"
+>
+  <SectionTitle
+    title="Mengapa AI Kami Berbeda"
+    subtitle="Bukan sekadar chatbot yang menjawab pertanyaan &mdash; ini sistem yang benar-benar menganalisis sebelum merekomendasikan."
+  />
+
+  <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
+    <FeatureCard
+      index={0}
+      icon={Database}
+      title="Knowledge Base"
+      description="195 produk skincare lokal, kandungan aktif, dan status BPOM terverifikasi — bukan data yang diketik asal."
+    />
+    <FeatureCard
+      index={1}
+      icon={Eye}
+      title="Evidence-Aware AI"
+      description="Tiap rekomendasi punya Evidence Level — transparan soal seberapa kuat data di baliknya, bukan menyembunyikan ketidakpastian."
+    />
+    <FeatureCard
+      index={2}
+      icon={MessageSquareText}
+      title="Explainable Recommendation"
+      description="Bukan cuma daftar produk. Sistem menjelaskan kandungan apa yang cocok dan kenapa, dalam bahasa yang mudah dipahami."
+    />
+  </div>
+</section>
 
       {/* ================= SDG IMPACT ================= */}
       <section className="mx-auto max-w-[1200px] px-6 py-20 md:py-28">
