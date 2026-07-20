@@ -71,12 +71,6 @@ export default function About() {
                 <h3 className="text-base font-bold text-slate-900">{member.name}</h3>
                 <p className="text-xs text-slate-400">{member.nim} &middot; {member.prodi}</p>
               </div>
-              <div>
-                <span className="inline-block rounded-full bg-blue-50 px-2.5 py-1 text-[11px] font-bold text-blue-700">
-                  {member.role}
-                </span>
-                <p className="mt-2.5 text-sm leading-relaxed text-slate-500">{member.desc}</p>
-              </div>
             </motion.div>
           ))}
         </div>
