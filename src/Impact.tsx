@@ -127,7 +127,7 @@ export default function Impact() {
 
       {/* ===== SDG DETAIL ===== */}
       <section className="mx-auto max-w-[1200px] px-6 py-16">
-        <SectionTitle eyebrow="🌍 SDGs" title="Sustainable Development Goals yang Didukung" />
+        <SectionTitle eyebrow="SDGs" title="Sustainable Development Goals yang Didukung" />
         <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
           {[
             { icon: HeartPulse, tag: "SDG 3", title: "Good Health and Well-being", desc: "Rekomendasi aman, sesuai kondisi kulit, terverifikasi BPOM." },

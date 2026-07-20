@@ -5,7 +5,7 @@ import {
   Sparkles, ShieldCheck, BadgeCheck, ArrowRight, Database,
   Eye, MessageSquareText, Droplets, Target, FlaskConical,
   Wallet, HeartPulse, ClipboardCheck, ClipboardList, BrainCog,
-  Globe2, Recycle, Factory,
+  Globe2, Recycle, Factory, Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -101,7 +101,7 @@ export default function Landing() {
               </div>
 
               <div className="mt-1 flex items-center gap-1 text-amber-500">
-                {"★★★★★".split("").map((s, i) => <span key={i}>{s}</span>)}
+                {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={13} fill="currentColor" strokeWidth={0} />)}
                 <span className="ml-1 text-xs font-medium text-slate-400">Evidence Level</span>
               </div>
 
@@ -166,7 +166,7 @@ export default function Landing() {
       {/* ================= SDG IMPACT ================= */}
       <section className="mx-auto max-w-[1200px] px-6 py-20 md:py-28">
         <SectionTitle
-          eyebrow="🌍 Dampak terhadap SDGs"
+          eyebrow="Dampak terhadap SDGs"
           title="Mendukung Tujuan Pembangunan Berkelanjutan"
           subtitle="Bukan sekadar proyek teknologi — dirancang untuk berkontribusi nyata terhadap Sustainable Development Goals."
         />
