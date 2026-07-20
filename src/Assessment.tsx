@@ -505,6 +505,7 @@ function ProductCard({
           evidence: { matched_ingredients: r.matched_ingredients, avoided_ingredients: r.avoided_ingredients, evidence_level: r.evidence_level },
           confidence: r.confidence_pct,
           constraints: { pregnancy_status: r.pregnancy_safe_status, price_idr: r.price_idr, bpom_status: r.bpom_status },
+          routine: { category, step_ke: routineStep, total_langkah: routineTotal, urutan_kategori: "Cleanser, Toner, Serum, Moisturizer, Sunscreen" },
         }),
       });
       if (!res.ok) throw new Error("request failed");

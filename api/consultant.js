@@ -1,9 +1,11 @@
 /**
  * AI Consultant endpoint -- Context-Augmented Generation (CAG), BUKAN RAG.
  * LLM di sini TIDAK memilih produk dan TIDAK mencari data sendiri (nggak
- * ada vector search/embedding). Semua context yang dijawab udah dipilih
- * dan dihitung duluan oleh Recommendation Engine v6 -- LLM cuma nyusun
- * kalimat natural dari data yang dikasih, nggak boleh nambah info sendiri.
+ * ada vector search/embedding). Fakta SPESIFIK (skor, harga, BPOM, status
+ * hamil, nama produk) WAJIB diambil dari context JSON -- LLM boleh
+ * menambahkan pengetahuan umum skincare/dermatologi yang sudah mapan
+ * (misal "apa fungsi Ceramide secara umum") untuk melengkapi jawaban,
+ * tapi tidak boleh mengarang fakta spesifik soal produk kita.
  */
 export default async function handler(req, res) {
   if (req.method !== "POST") {
@@ -15,7 +17,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "GEMINI_API_KEY belum di-set di Vercel." });
   }
 
-  const { question, user, recommendation, comparison, evidence, confidence, constraints } = req.body || {};
+  const { question, user, recommendation, comparison, evidence, confidence, constraints, routine } = req.body || {};
 
   if (!question) {
     return res.status(400).json({ error: "Field 'question' wajib diisi." });
@@ -23,35 +25,33 @@ export default async function handler(req, res) {
 
   const systemPrompt = `You are SkinCheck AI Consultant, asisten konsultasi skincare berbasis data.
 
-ATURAN KETAT (wajib dipatuhi):
-- You are NOT allowed to recommend products outside the provided context.
-- You MUST answer ONLY using the structured data provided in the context JSON.
-- If the answer cannot be found in the context, respond exactly with:
-  "Maaf, informasi tersebut tidak tersedia dalam hasil analisis saat ini."
-- Never invent ingredients, scores, prices, or BPOM numbers that are not in the context.
-- Never recommend a product that is not present in the context.
-- Jawab selalu dalam Bahasa Indonesia, dengan nada seperti konsultan skincare yang ramah dan jelas -- bukan robot yang membacakan angka mentah.
-- Jawaban singkat, maksimal 3-4 kalimat.`;
+ATURAN:
+- Fakta SPESIFIK (nama produk, skor, harga, status BPOM, status kehamilan) WAJIB berasal dari context JSON yang diberikan. JANGAN mengarang angka, harga, atau nama produk yang tidak ada di context.
+- Untuk pertanyaan umum soal fungsi/manfaat suatu kandungan (misal "apa fungsi Niacinamide"), kamu BOLEH menambahkan pengetahuan dermatologi umum yang sudah mapan sebagai pelengkap -- tapi tetap kaitkan dengan data context yang relevan kalau ada.
+- Kalau context sama sekali tidak punya info yang relevan DAN kamu juga tidak punya pengetahuan umum yang relevan, jawab: "Maaf, informasi tersebut tidak tersedia dalam hasil analisis saat ini."
+- Jangan merekomendasikan produk yang tidak ada di context.
+- Jawab selalu dalam Bahasa Indonesia, nada seperti konsultan skincare yang ramah dan jelas -- bukan robot yang membacakan angka mentah.
+- Jawaban lengkap dan utuh (jangan terpotong), tapi ringkas: 3-5 kalimat.`;
 
-  const contextData = { user, recommendation, comparison, evidence, confidence, constraints };
+  const contextData = { user, recommendation, comparison, evidence, confidence, constraints, routine };
 
-  const userPrompt = `Context (JSON, satu-satunya sumber informasi yang boleh dipakai):
+  const userPrompt = `Context (JSON, sumber utama informasi soal produk ini):
 ${JSON.stringify(contextData, null, 2)}
 
 Pertanyaan pengguna: "${question}"
 
-Jawab pertanyaan di atas HANYA berdasarkan context JSON ini.`;
+Jawab pertanyaan di atas berdasarkan context JSON ini, dilengkapi pengetahuan umum dermatologi kalau relevan (sesuai aturan di atas). Pastikan jawabanmu lengkap, jangan terpotong di tengah kalimat.`;
 
   try {
     const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${apiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-001:generateContent?key=${apiKey}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           contents: [{ parts: [{ text: userPrompt }] }],
           systemInstruction: { parts: [{ text: systemPrompt }] },
-          generationConfig: { temperature: 0.3, maxOutputTokens: 300 },
+          generationConfig: { temperature: 0.4, maxOutputTokens: 500 },
         }),
       }
     );
