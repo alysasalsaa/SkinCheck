@@ -556,7 +556,8 @@ function ProductCard({
  * Compare + AI Verdict + Why Not, dalam satu panel.
  * Semua angka & alasan diambil langsung dari komponen skor Recommendation
  * Engine v6 (skin_match, ingredient_match, synergy, bpom) -- bukan dihitung
- * ulang atau dikarang di frontend.
+ * ulang atau dikarang di frontend. AI Verdict menjelaskan KENAPA (faktor
+ * dominan), Why Not menjelaskan TRADE-OFF -- dua fungsi yang sengaja dibedakan.
  */
 function ComparePanel({
   a, b, alternatives, onChangeB,
@@ -566,8 +567,24 @@ function ComparePanel({
   alternatives: Recommendation[];
   onChangeB: (r: Recommendation) => void;
 }) {
-  const winner = a.total_pct >= b.total_pct ? a : b;
-  const loser = winner.id === a.id ? b : a;
+  const isTotalTie = a.total_pct === b.total_pct;
+  const isFullyIdentical =
+    isTotalTie &&
+    a.skin_match_pct === b.skin_match_pct &&
+    a.ingredient_match_pct === b.ingredient_match_pct &&
+    a.synergy_pct === b.synergy_pct &&
+    a.bpom_pct === b.bpom_pct;
+
+  // Kalau total skor seri, tie-break pakai Skin Match (kriteria utama kami).
+  let winner = a;
+  let loser = b;
+  if (isTotalTie) {
+    winner = a.skin_match_pct >= b.skin_match_pct ? a : b;
+  } else {
+    winner = a.total_pct >= b.total_pct ? a : b;
+  }
+  loser = winner.id === a.id ? b : a;
+  const wonByTieBreak = isTotalTie && !isFullyIdentical;
 
   const rows = [
     { label: "Skin Match", av: a.skin_match_pct, bv: b.skin_match_pct, max: 40 },
@@ -577,26 +594,53 @@ function ComparePanel({
     { label: "Total Score", av: a.total_pct, bv: b.total_pct, max: 100 },
   ];
 
-  const reasons: string[] = [];
+  // Faktor yang bikin winner unggul, diurutkan dari selisih poin terbesar.
+  const factorDiffs = [
+    { label: "Skin Match", diff: winner.skin_match_pct - loser.skin_match_pct },
+    { label: "Ingredient Match", diff: winner.ingredient_match_pct - loser.ingredient_match_pct },
+    { label: "Synergy", diff: winner.synergy_pct - loser.synergy_pct },
+    { label: "BPOM", diff: winner.bpom_pct - loser.bpom_pct },
+  ].filter((f) => f.diff > 0).sort((x, y) => y.diff - x.diff);
+
+  // === AI Verdict: menjelaskan KENAPA, bukan cuma ngulang skor ===
+  let verdictText: string;
+  if (isFullyIdentical) {
+    verdictText = `Kedua produk memiliki skor akhir yang sama persis di semua komponen. Keduanya sama-sama direkomendasikan -- silakan pilih berdasarkan preferensi harga atau tekstur.`;
+  } else if (wonByTieBreak) {
+    verdictText = `${winner.brand} dan ${loser.brand} memperoleh skor total yang setara (${winner.total_pct}%). Sistem memprioritaskan ${winner.brand} karena unggul pada Skin Match, kriteria utama dalam rekomendasi kami.`;
+  } else if (factorDiffs.length >= 2) {
+    verdictText = `${winner.brand} dipilih sebagai rekomendasi utama karena memberikan keseimbangan lebih baik antara ${factorDiffs[0].label.toLowerCase()} dan ${factorDiffs[1].label.toLowerCase()} dibanding ${loser.brand}, sambil tetap memenuhi seluruh syarat keamanan (BPOM, budget, dan kehamilan).`;
+  } else if (factorDiffs.length === 1) {
+    verdictText = `${winner.brand} dipilih karena unggul pada ${factorDiffs[0].label.toLowerCase()} dibanding ${loser.brand}, dengan seluruh syarat keamanan (BPOM, budget, kehamilan) tetap terpenuhi di kedua produk.`;
+  } else {
+    verdictText = `${winner.brand} dipilih karena skor totalnya sedikit lebih tinggi secara keseluruhan (${winner.total_pct}% vs ${loser.total_pct}%).`;
+  }
+
+  // === Why Not: menjelaskan TRADE-OFF, bukan cuma "skor lebih rendah" ===
+  const tradeoffs: string[] = [];
   if (loser.price_idr && winner.price_idr && loser.price_idr > winner.price_idr) {
-    reasons.push(`Harga lebih tinggi: Rp${loser.price_idr.toLocaleString("id-ID")} vs Rp${winner.price_idr.toLocaleString("id-ID")}`);
+    tradeoffs.push(`Harga sedikit lebih tinggi: Rp${loser.price_idr.toLocaleString("id-ID")} vs Rp${winner.price_idr.toLocaleString("id-ID")}`);
   }
   if (loser.avoided_ingredients.length > 0) {
-    reasons.push(`Mengandung ${loser.avoided_ingredients.join(", ")} yang perlu dihindari sesuai profil kamu`);
+    tradeoffs.push(`Mengandung ${loser.avoided_ingredients.join(", ")} yang perlu dihindari sesuai profil kamu`);
   }
-  if (loser.skin_match_pct < winner.skin_match_pct) {
-    reasons.push("Skor kecocokan tipe kulit lebih rendah");
-  }
-  if (loser.ingredient_match_pct < winner.ingredient_match_pct) {
-    reasons.push("Kandungan aktif kurang sesuai kebutuhan dibanding pilihan utama");
-  }
-  if (loser.synergy_pct < winner.synergy_pct) {
-    reasons.push("Kombinasi bahan aktifnya kurang saling mendukung");
-  }
+  factorDiffs.forEach((f) => {
+    tradeoffs.push(`${f.label} lebih rendah terhadap profil kamu (-${f.diff} poin)`);
+  });
   if (loser.pregnancy_safe_status === "tidak_aman" && winner.pregnancy_safe_status !== "tidak_aman") {
-    reasons.push("Tidak aman untuk kehamilan/menyusui berdasarkan data kami");
+    tradeoffs.push("Tidak aman untuk kehamilan/menyusui berdasarkan data kami");
   }
-  if (reasons.length === 0) reasons.push("Skor totalnya sedikit lebih rendah secara keseluruhan dibanding pilihan utama.");
+  if (!isFullyIdentical && !isTotalTie) {
+    tradeoffs.push(`Total skor akhir ${winner.total_pct - loser.total_pct} poin di bawah rekomendasi utama`);
+  }
+
+  // Decision Factors: ringkasan visual kekuatan produk pemenang.
+  const pips = (val: number, max: number) => Math.max(1, Math.round((val / max) * 5));
+  const pregnancyLabel =
+    winner.pregnancy_safe_status === "aman" ? "Aman"
+    : winner.pregnancy_safe_status === "perlu_konsultasi" ? "Perlu Konsultasi"
+    : winner.pregnancy_safe_status === "tidak_aman" ? "Tidak Aman"
+    : "Belum Diketahui";
 
   return (
     <div className="mt-3 rounded-xl border border-slate-200 bg-slate-50 p-3.5">
@@ -616,7 +660,25 @@ function ComparePanel({
         </div>
       )}
 
-      <div className="grid grid-cols-3 items-center gap-2 text-center">
+      {/* Badge pemenang vs alternatif */}
+      <div className="grid grid-cols-2 gap-2">
+        {[a, b].map((p) => {
+          const isWinner = p.id === winner.id && !isFullyIdentical;
+          return (
+            <div key={p.id} className={`rounded-lg px-2.5 py-2 text-center ${isWinner ? "bg-emerald-100" : "bg-white border border-slate-200"}`}>
+              <p className={`text-[10px] font-bold ${isWinner ? "text-emerald-700" : "text-slate-500"}`}>
+                {isFullyIdentical ? "\u2696\uFE0F Setara" : isWinner ? "\uD83C\uDFC6 Recommended" : "\u26A0\uFE0F Alternative"}
+              </p>
+              <p className="truncate text-xs font-bold text-slate-900">{p.brand}</p>
+              <p className="text-[10px] text-slate-400">
+                {isWinner ? `Confidence ${p.confidence_pct}%` : `Overall Score ${p.total_pct}%`}
+              </p>
+            </div>
+          );
+        })}
+      </div>
+
+      <div className="mt-3 grid grid-cols-3 items-center gap-2 text-center">
         <p className="truncate text-xs font-bold text-slate-900">{a.brand}</p>
         <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">vs</p>
         <p className="truncate text-xs font-bold text-slate-900">{b.brand}</p>
@@ -642,27 +704,64 @@ function ComparePanel({
         ))}
       </div>
 
-      <div className="mt-3.5 flex items-start gap-2 rounded-lg bg-emerald-50 p-3">
-        <CircleCheck size={15} className="mt-0.5 shrink-0 text-emerald-600" />
-        <div>
-          <p className="text-[11px] font-bold text-emerald-800">AI Verdict</p>
-          <p className="mt-0.5 text-xs leading-relaxed text-emerald-700">
-            Kami memilih <b>{winner.brand}</b> karena skor total lebih tinggi ({winner.total_pct}% vs {loser.total_pct}%).
-          </p>
+      {/* Decision Factors -- ringkasan kekuatan produk pemenang */}
+      {!isFullyIdentical && (
+        <div className="mt-3.5 rounded-lg border border-slate-200 bg-white p-3">
+          <p className="text-[11px] font-bold text-slate-700">Decision Factors -- {winner.brand}</p>
+          <div className="mt-1.5 flex flex-col gap-1">
+            {[
+              { label: "Skin Match", pip: pips(winner.skin_match_pct, 40) },
+              { label: "Ingredient", pip: pips(winner.ingredient_match_pct, 30) },
+              { label: "Synergy", pip: pips(Math.max(winner.synergy_pct, 0), 10) },
+            ].map((f) => (
+              <div key={f.label} className="flex items-center justify-between">
+                <span className="text-[11px] text-slate-500">{f.label}</span>
+                <span className="text-[11px] font-bold text-blue-600">{"+".repeat(f.pip)}</span>
+              </div>
+            ))}
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-slate-500">BPOM</span>
+              <Check size={12} className="text-emerald-500" />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-slate-500">Budget</span>
+              <Check size={12} className="text-emerald-500" />
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[11px] text-slate-500">Pregnancy</span>
+              <span className="text-[11px] font-semibold text-slate-600">{pregnancyLabel}</span>
+            </div>
+          </div>
         </div>
+      )}
+
+      <div className="mt-3.5 rounded-lg bg-emerald-50 p-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <CircleCheck size={15} className="shrink-0 text-emerald-600" />
+            <p className="text-[11px] font-bold text-emerald-800">AI Verdict</p>
+          </div>
+          <span className="text-[10px] font-bold text-emerald-600">Confidence {winner.confidence_pct}%</span>
+        </div>
+        <p className="mt-1.5 text-xs leading-relaxed text-emerald-700">{verdictText}</p>
       </div>
 
-      <div className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-3">
-        <TriangleAlert size={15} className="mt-0.5 shrink-0 text-amber-600" />
-        <div>
-          <p className="text-[11px] font-bold text-amber-800">Mengapa bukan {loser.brand}?</p>
-          <ul className="mt-1 flex flex-col gap-0.5">
-            {reasons.map((r) => (
-              <li key={r} className="text-xs leading-relaxed text-amber-700">&bull; {r}</li>
-            ))}
-          </ul>
+      {!isFullyIdentical && tradeoffs.length > 0 && (
+        <div className="mt-2 flex items-start gap-2 rounded-lg bg-amber-50 p-3">
+          <TriangleAlert size={15} className="mt-0.5 shrink-0 text-amber-600" />
+          <div>
+            <p className="text-[11px] font-bold text-amber-800">Mengapa bukan {loser.brand}?</p>
+            <p className="mt-0.5 text-xs leading-relaxed text-amber-700">
+              {loser.brand} tetap merupakan alternatif yang baik, namun belum menjadi pilihan utama karena:
+            </p>
+            <ul className="mt-1 flex flex-col gap-0.5">
+              {tradeoffs.map((t) => (
+                <li key={t} className="text-xs leading-relaxed text-amber-700">&bull; {t}</li>
+              ))}
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
