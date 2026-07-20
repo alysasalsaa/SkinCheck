@@ -1,7 +1,5 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { Code2, FlaskConical, Calculator, ArrowRight, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Code2, FlaskConical, Calculator, Users } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 
 const TEAM = [
@@ -32,7 +30,6 @@ const TEAM = [
 ];
 
 export default function About() {
-  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
       <Navbar />
@@ -73,32 +70,6 @@ export default function About() {
               </div>
             </motion.div>
           ))}
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-60px" }}
-          transition={{ duration: 0.4, delay: 0.3 }}
-          className="mt-8 rounded-2xl border border-slate-200 bg-white p-6"
-        >
-          <h3 className="text-sm font-bold text-slate-900">Kenapa Tim Lintas Disiplin?</h3>
-          <p className="mt-2 text-sm leading-relaxed text-slate-500">
-            Sistem rekomendasi skincare yang bisa dipertanggungjawabkan butuh lebih dari sekadar kode.
-            Ilmu Komputer membangun sistem rekomendasi dan aplikasinya; Pendidikan Kimia memastikan
-            basis pengetahuan kandungan disusun secara ilmiah; Matematika merancang model pembobotan,
-            confidence score, dan evaluasi kuantitatif. Kombinasi ini yang membuat SkinCheck lebih dari
-            sekadar aplikasi -- tapi pendekatan yang dibangun dari berbagai perspektif keilmuan.
-          </p>
-        </motion.div>
-      </section>
-
-      <section className="mx-auto max-w-[1200px] px-6 py-16">
-        <div className="flex flex-col items-center gap-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white px-6 py-16 text-center">
-          <h2 className="text-2xl font-extrabold md:text-3xl">Coba SkinCheck sekarang</h2>
-          <Button onClick={() => navigate("/assessment")} size="lg" className="gap-2 rounded-xl bg-blue-600 px-7 text-white shadow-md shadow-blue-600/20 hover:bg-blue-700">
-            Mulai Analisis <ArrowRight size={16} />
-          </Button>
         </div>
       </section>
 

@@ -1,10 +1,8 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
 import {
-  HeartPulse, Recycle, Factory, BookOpen, ArrowRight, ArrowDown,
+  HeartPulse, Recycle, Factory, ArrowDown,
   Users, Building2, GraduationCap, X, Check, BadgeCheck, ShieldCheck, Database, Globe2,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Navbar } from "@/components/Navbar";
 import { SectionTitle } from "@/components/SectionTitle";
 import { StatCard } from "@/components/StatCard";
@@ -55,7 +53,6 @@ const BENEFITS = [
 ];
 
 export default function Impact() {
-  const navigate = useNavigate();
   return (
     <div className="min-h-screen bg-[#F8FAFC] text-slate-900">
       <Navbar />
@@ -195,18 +192,6 @@ export default function Impact() {
               </ul>
             </motion.div>
           ))}
-        </div>
-      </section>
-
-      {/* ===== CTA ===== */}
-      <section className="mx-auto max-w-[1200px] px-6 pb-24">
-        <div className="flex flex-col items-center gap-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white px-6 py-16 text-center">
-          <BookOpen size={28} className="text-blue-600" />
-          <h2 className="text-2xl font-extrabold md:text-3xl">Coba analisis kulitmu sekarang</h2>
-          <p className="max-w-md text-slate-500">Rasakan langsung bagaimana rekomendasi berbasis evidence bekerja.</p>
-          <Button onClick={() => navigate("/assessment")} size="lg" className="gap-2 rounded-xl bg-blue-600 px-7 text-white shadow-md shadow-blue-600/20 hover:bg-blue-700">
-            Mulai Analisis <ArrowRight size={16} />
-          </Button>
         </div>
       </section>
 

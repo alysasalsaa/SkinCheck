@@ -275,17 +275,6 @@ export default function Landing() {
         </div>
       </section>
 
-      {/* ================= CTA PENUTUP ================= */}
-      <section className="mx-auto max-w-[1200px] px-6 pb-24">
-        <div className="flex flex-col items-center gap-5 rounded-3xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white px-6 py-16 text-center">
-          <h2 className="text-2xl md:text-3xl font-extrabold text-slate-900">Siap tahu skincare yang cocok buat kamu?</h2>
-          <p className="max-w-md text-slate-500">Sekitar 1 menit, langsung dapat rekomendasi lengkap dengan alasannya.</p>
-          <Button onClick={() => navigate("/assessment")} size="lg" className="gap-2 rounded-xl bg-blue-600 px-7 text-white shadow-md shadow-blue-600/20 transition-transform hover:scale-[1.02] hover:bg-blue-700">
-            Mulai Analisis Gratis <ArrowRight size={16} />
-          </Button>
-        </div>
-      </section>
-
       {/* ================= FOOTER ================= */}
       <footer className="border-t border-slate-200 py-8">
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 px-6 text-sm text-slate-400 sm:flex-row">
