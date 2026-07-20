@@ -148,10 +148,12 @@ export default function Assessment() {
     Object.values(byCategory).forEach((arr) => arr.sort((a, b) => b.total_pct - a.total_pct));
   }
   const topPicks = CATEGORY_ORDER.filter((c) => byCategory[c]?.length).map((c) => byCategory[c][0]);
-  const avgConfidence = topPicks.length
-    ? Math.round(topPicks.reduce((sum, p) => sum + p.confidence_pct, 0) / topPicks.length)
-    : 0;
-  const worstEvidenceTier = topPicks.some((p) => p.evidence_tier === "L3") ? "L3" : topPicks.some((p) => p.evidence_tier === "L2") ? "L2" : "L1";
+  // "Best" = 1 produk representatif (skor total tertinggi) -- Skin Match,
+  // Confidence, dan Evidence yang ditampilkan SEMUA soal produk yang SAMA,
+  // biar nggak ada kesan 2 angka yang saling bertentangan.
+  const bestPick = topPicks.length
+    ? [...topPicks].sort((x, y) => y.total_pct - x.total_pct)[0]
+    : null;
 
   const isNextDisabled =
     (step === 0 && ageBracket === null) ||
@@ -308,19 +310,29 @@ export default function Assessment() {
                   <ReportRow label="Hamil / Menyusui" value={hamil ? "Ya" : "Tidak"} last />
                 </div>
 
-                {topPicks.length > 0 && (
-                  <div className="mt-4 flex items-center justify-between rounded-2xl bg-slate-900 p-5">
-                    <div>
-                      <p className="text-xs font-semibold text-slate-400">AI Confidence <span className="text-slate-500">(rata-rata)</span></p>
-                      <p className="text-2xl font-extrabold text-white">{avgConfidence}%</p>
+                {bestPick && (
+                  <div className="mt-4 rounded-2xl bg-slate-900 p-5">
+                    <p className="mb-3 text-[10px] font-bold uppercase tracking-wider text-slate-500">Recommendation Summary</p>
+                    <div className="grid grid-cols-3 gap-3">
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-400">\uD83C\uDFAF Best Skin Match</p>
+                        <p className="mt-1 text-xl font-extrabold text-white">{bestPick.total_pct}%</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-400">\uD83E\uDDE0 Confidence</p>
+                        <p className="mt-1 text-xl font-extrabold text-white">{bestPick.confidence_pct}%</p>
+                      </div>
+                      <div>
+                        <p className="text-[10px] font-semibold text-slate-400">\u2B50 Evidence</p>
+                        <p className="mt-1.5 text-amber-400">
+                          {"\u2605".repeat(bestPick.evidence_tier === "L1" ? 5 : bestPick.evidence_tier === "L2" ? 4 : 2)}
+                          <span className="text-slate-600">{"\u2605".repeat(5 - (bestPick.evidence_tier === "L1" ? 5 : bestPick.evidence_tier === "L2" ? 4 : 2))}</span>
+                        </p>
+                      </div>
                     </div>
-                    <div className="text-right">
-                      <p className="text-xs font-semibold text-slate-400">Evidence <span className="text-slate-500">(terendah)</span></p>
-                      <p className="text-amber-400">
-                        {"\u2605".repeat(worstEvidenceTier === "L1" ? 5 : worstEvidenceTier === "L2" ? 4 : 2)}
-                        <span className="text-slate-600">{"\u2605".repeat(5 - (worstEvidenceTier === "L1" ? 5 : worstEvidenceTier === "L2" ? 4 : 2))}</span>
-                      </p>
-                    </div>
+                    <p className="mt-3 border-t border-slate-800 pt-2.5 text-[11px] leading-relaxed text-slate-500">
+                      Berdasarkan <b className="text-slate-300">{bestPick.title}</b> ({bestPick.brand}) -- rekomendasi dengan skor tertinggi di routine kamu.
+                    </p>
                   </div>
                 )}
 
