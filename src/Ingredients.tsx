@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, FlaskConical, ChevronDown, ShieldAlert, ShieldCheck, ShieldQuestion, Sparkles, HelpCircle } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
@@ -25,6 +25,44 @@ const PREGNANCY_BADGE = {
   perlu_konsultasi: { label: "Perlu konsultasi", icon: ShieldQuestion, cls: "bg-warning-light text-warning" },
   tidak_aman: { label: "Tidak aman hamil", icon: ShieldAlert, cls: "bg-red-50 text-red-600" },
 };
+
+// Frasa kunci yang di-bold di tiap AI Summary -- fokus ke hal yang paling
+// penting buat di-scan cepat: tipe kulit cocok, status keamanan hamil,
+// peringatan kombinasi bahan, dan fungsi utama kandungannya.
+const SAFETY_PHRASES = [
+  "aman digunakan oleh ibu hamil", "aman untuk ibu hamil", "sangat aman digunakan oleh ibu hamil",
+  "tidak aman digunakan oleh ibu hamil", "tidak aman", "tidak disarankan",
+  "perlu dikonsultasikan terlebih dahulu dengan dokter", "perlu dikonsultasikan",
+  "sangat disarankan untuk berkonsultasi dengan dokter",
+  "tidak disarankan untuk digunakan selama masa kehamilan",
+  "hindari penggunaan jika Anda sedang hamil atau menyusui",
+];
+const SKIN_TYPE_WORDS = ["kulit kering", "kulit berminyak", "kulit sensitif", "kulit kombinasi", "kulit normal", "rawan jerawat", "kulit dehidrasi", "kulit kusam"];
+const COMBINATION_WARNINGS = [
+  "tidak mengombinasikannya dengan Retinol atau BHA", "tidak mengombinasikannya dengan retinol",
+  "menghindari penggunaan BHA bersamaan dengan Retinol atau AHA", "tidak menggunakannya bersamaan dengan Retinol atau AHA",
+  "hindari penggunaan bersamaan dengan AHA, BHA, Salicylic Acid, serta Vitamin C",
+  "tidak menggunakannya bersamaan dengan AHA, BHA, atau Salicylic Acid",
+  "menghindari risiko iritasi",
+];
+const FUNCTION_KEYWORDS = [
+  "eksfoliant", "eksfolian", "antioksidan", "anti-acne", "pencerah kulit", "barrier repair",
+  "skin barrier", "menenangkan kulit", "menghidrasi", "regenerasi sel", "anti-aging",
+  "mengontrol produksi minyak", "memperkuat skin barrier",
+];
+
+function highlightSummary(text: string): ReactNode[] {
+  const patterns = [...SAFETY_PHRASES, ...COMBINATION_WARNINGS, ...SKIN_TYPE_WORDS, ...FUNCTION_KEYWORDS].sort((a, b) => b.length - a.length);
+  const regex = new RegExp(`(${patterns.map((p) => p.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})`, "gi");
+  const parts = text.split(regex);
+  return parts.map((part, i) =>
+    patterns.some((p) => p.toLowerCase() === part.toLowerCase()) ? (
+      <b key={i} className="text-ink">{part}</b>
+    ) : (
+      part
+    )
+  );
+}
 
 export default function Ingredients() {
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -128,7 +166,7 @@ export default function Ingredients() {
                   {ing.ai_summary ? (
                     <div className="mt-2 flex items-start gap-1.5">
                       <Sparkles size={13} className="mt-0.5 shrink-0 text-primary" />
-                      <p className="text-sm leading-relaxed text-slate-500">{ing.ai_summary}</p>
+                      <p className="text-sm leading-relaxed text-slate-500">{highlightSummary(ing.ai_summary)}</p>
                     </div>
                   ) : (
                     <p className="mt-2 text-sm leading-relaxed text-slate-500">{ing.benefits}</p>
