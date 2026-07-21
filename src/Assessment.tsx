@@ -740,13 +740,13 @@ function ComparePanel({
   if (isFullyIdentical) {
     verdictText = `Kedua produk memiliki skor akhir yang sama persis di semua komponen. Keduanya sama-sama direkomendasikan -- silakan pilih berdasarkan preferensi harga atau tekstur.`;
   } else if (wonByTieBreak) {
-    verdictText = `${winner.brand} dan ${loser.brand} memperoleh skor total yang setara (${winner.total_pct}%). Sistem memprioritaskan ${winner.brand} karena unggul pada Skin Match, kriteria utama dalam rekomendasi kami.`;
+    verdictText = `${winner.title} dan ${loser.title} memperoleh skor total yang setara (${winner.total_pct}%). Sistem memprioritaskan ${winner.title} karena unggul pada Skin Match, kriteria utama dalam rekomendasi kami.`;
   } else if (factorDiffs.length >= 2) {
-    verdictText = `${winner.brand} dipilih sebagai rekomendasi utama karena memberikan keseimbangan lebih baik antara ${factorDiffs[0].label.toLowerCase()} dan ${factorDiffs[1].label.toLowerCase()} dibanding ${loser.brand}, sambil tetap memenuhi seluruh syarat keamanan (BPOM, budget, dan kehamilan).`;
+    verdictText = `${winner.title} dipilih sebagai rekomendasi utama karena memberikan keseimbangan lebih baik antara ${factorDiffs[0].label.toLowerCase()} dan ${factorDiffs[1].label.toLowerCase()} dibanding ${loser.title}, sambil tetap memenuhi seluruh syarat keamanan (BPOM, budget, dan kehamilan).`;
   } else if (factorDiffs.length === 1) {
-    verdictText = `${winner.brand} dipilih karena unggul pada ${factorDiffs[0].label.toLowerCase()} dibanding ${loser.brand}, dengan seluruh syarat keamanan (BPOM, budget, kehamilan) tetap terpenuhi di kedua produk.`;
+    verdictText = `${winner.title} dipilih karena unggul pada ${factorDiffs[0].label.toLowerCase()} dibanding ${loser.title}, dengan seluruh syarat keamanan (BPOM, budget, kehamilan) tetap terpenuhi di kedua produk.`;
   } else {
-    verdictText = `${winner.brand} dipilih karena skor totalnya sedikit lebih tinggi secara keseluruhan (${winner.total_pct}% vs ${loser.total_pct}%).`;
+    verdictText = `${winner.title} dipilih karena skor totalnya sedikit lebih tinggi secara keseluruhan (${winner.total_pct}% vs ${loser.total_pct}%).`;
   }
 
   // === Why Not: menjelaskan TRADE-OFF, bukan cuma "skor lebih rendah" ===
@@ -783,11 +783,11 @@ function ComparePanel({
             <button
               key={alt.id}
               onClick={() => onChangeB(alt)}
-              className={`rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+              className={`max-w-[140px] truncate rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
                 alt.id === b.id ? "bg-ink text-white" : "bg-white text-slate-500 border border-slate-200"
               }`}
             >
-              {alt.brand}
+              {alt.title}
             </button>
           ))}
         </div>
@@ -803,7 +803,8 @@ function ComparePanel({
                 {isFullyIdentical ? <Scale size={11} /> : isWinner ? <Trophy size={11} /> : <TriangleAlert size={11} />}
                 {isFullyIdentical ? "Setara" : isWinner ? "Recommended" : "Alternative"}
               </p>
-              <p className="truncate text-xs font-bold text-ink">{p.brand}</p>
+              <p className="truncate text-xs font-bold text-ink">{p.title}</p>
+              <p className="truncate text-[10px] text-slate-400">{p.brand}</p>
               <p className="text-[10px] text-slate-400">
                 {isWinner ? `Confidence ${p.confidence_pct}%` : `Overall Score ${p.total_pct}%`}
               </p>
@@ -813,9 +814,9 @@ function ComparePanel({
       </div>
 
       <div className="mt-3 grid grid-cols-3 items-center gap-2 text-center">
-        <p className="truncate text-xs font-bold text-ink">{a.brand}</p>
+        <p className="truncate text-xs font-bold text-ink">{a.title}</p>
         <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">vs</p>
-        <p className="truncate text-xs font-bold text-ink">{b.brand}</p>
+        <p className="truncate text-xs font-bold text-ink">{b.title}</p>
       </div>
 
       <div className="mt-2.5 flex flex-col gap-2">
@@ -841,7 +842,7 @@ function ComparePanel({
       {/* Decision Factors -- ringkasan kekuatan produk pemenang */}
       {!isFullyIdentical && (
         <div className="mt-3.5 rounded-lg border border-slate-200 bg-white p-3">
-          <p className="text-[11px] font-bold text-slate-700">Decision Factors -- {winner.brand}</p>
+          <p className="text-[11px] font-bold text-slate-700">Decision Factors -- {winner.title}</p>
           <div className="mt-1.5 flex flex-col gap-1">
             {[
               { label: "Skin Match", pip: pips(winner.skin_match_pct, 40) },
@@ -884,9 +885,9 @@ function ComparePanel({
         <div className="mt-2 flex items-start gap-2 rounded-lg bg-warning-light p-3">
           <TriangleAlert size={15} className="mt-0.5 shrink-0 text-warning" />
           <div>
-            <p className="text-[11px] font-bold text-warning">Mengapa bukan {loser.brand}?</p>
+            <p className="text-[11px] font-bold text-warning">Mengapa bukan {loser.title}?</p>
             <p className="mt-0.5 text-xs leading-relaxed text-warning">
-              {loser.brand} tetap merupakan alternatif yang baik, namun belum menjadi pilihan utama karena:
+              {loser.title} tetap merupakan alternatif yang baik, namun belum menjadi pilihan utama karena:
             </p>
             <ul className="mt-1 flex flex-col gap-0.5">
               {tradeoffs.map((t) => (
