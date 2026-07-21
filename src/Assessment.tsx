@@ -66,6 +66,7 @@ export default function Assessment() {
   const [analysisIdx, setAnalysisIdx] = useState(0);
   const [results, setResults] = useState<Recommendation[] | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [openingSummary, setOpeningSummary] = useState<string | null>(null);
 
   const totalQuestions = 5;
 
@@ -113,6 +114,25 @@ export default function Assessment() {
       if (!res.ok) throw new Error("Gagal mengambil data dari server.");
       const data: Recommendation[] = await res.json();
 
+      // Manfaatin sisa waktu loading buat minta Gemini bikin kalimat pembuka
+      // -- fire-and-forget, nggak nge-block transisi ke Report. Kalau gagal
+      // atau kelamaan, halaman Report tetap muncul normal tanpa kalimat ini.
+      const bestForSummary = [...data].sort((a, b) => b.total_pct - a.total_pct)[0];
+      if (bestForSummary) {
+        fetch("/api/consultant", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            question: "Buatkan kalimat sambutan pembuka singkat (maksimal 2 kalimat) yang ramah, merangkum bahwa rekomendasi sudah siap berdasarkan profil kulit pengguna. Jangan sebutkan angka skor secara eksplisit, cukup nada yang menenangkan dan meyakinkan.",
+            user: { skin_type: skinType, concern: conditions },
+            recommendation: { name: bestForSummary.title, brand: bestForSummary.brand, score: bestForSummary.total_pct },
+          }),
+        })
+          .then((r) => (r.ok ? r.json() : null))
+          .then((d) => { if (d?.answer) setOpeningSummary(d.answer); })
+          .catch(() => {}); // diam-diam gagal aja, nggak ganggu alur utama
+      }
+
       const elapsed = Date.now() - started;
       const minWait = Math.max(0, 2300 - elapsed);
       setTimeout(() => {
@@ -137,6 +157,7 @@ export default function Assessment() {
     setBudget("");
     setResults(null);
     setError(null);
+    setOpeningSummary(null);
   }
 
   const byCategory: Record<string, Recommendation[]> = {};
@@ -312,6 +333,19 @@ export default function Assessment() {
                 </motion.div>
                 <p className="text-center text-xs font-bold uppercase tracking-wide text-primary">Skin Report</p>
                 <h2 className="mt-1 text-center text-2xl font-extrabold text-ink">Hasil analisis kulitmu</h2>
+
+                <AnimatePresence>
+                  {openingSummary && (
+                    <motion.p
+                      initial={{ opacity: 0, y: 6 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.4 }}
+                      className="mt-3 text-center text-sm leading-relaxed text-slate-500"
+                    >
+                      {openingSummary}
+                    </motion.p>
+                  )}
+                </AnimatePresence>
 
                 <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
                   <ReportRow label="Tipe Kulit" value={skinType ?? "-"} />
