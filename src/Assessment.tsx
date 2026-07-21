@@ -783,7 +783,7 @@ function ComparePanel({
             <button
               key={alt.id}
               onClick={() => onChangeB(alt)}
-              className={`max-w-[140px] truncate rounded-full px-2.5 py-1 text-[11px] font-semibold transition-colors ${
+              className={`rounded-xl px-2.5 py-1.5 text-left text-[11px] font-semibold leading-snug transition-colors ${
                 alt.id === b.id ? "bg-ink text-white" : "bg-white text-slate-500 border border-slate-200"
               }`}
             >
@@ -803,7 +803,7 @@ function ComparePanel({
                 {isFullyIdentical ? <Scale size={11} /> : isWinner ? <Trophy size={11} /> : <TriangleAlert size={11} />}
                 {isFullyIdentical ? "Setara" : isWinner ? "Recommended" : "Alternative"}
               </p>
-              <p className="truncate text-xs font-bold text-ink">{p.title}</p>
+              <p className="line-clamp-2 text-xs font-bold leading-snug text-ink">{p.title}</p>
               <p className="truncate text-[10px] text-slate-400">{p.brand}</p>
               <p className="text-[10px] text-slate-400">
                 {isWinner ? `Confidence ${p.confidence_pct}%` : `Overall Score ${p.total_pct}%`}
@@ -814,9 +814,9 @@ function ComparePanel({
       </div>
 
       <div className="mt-3 grid grid-cols-3 items-center gap-2 text-center">
-        <p className="truncate text-xs font-bold text-ink">{a.title}</p>
+        <p className="line-clamp-2 text-xs font-bold leading-snug text-ink">{a.title}</p>
         <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">vs</p>
-        <p className="truncate text-xs font-bold text-ink">{b.title}</p>
+        <p className="line-clamp-2 text-xs font-bold leading-snug text-ink">{b.title}</p>
       </div>
 
       <div className="mt-2.5 flex flex-col gap-2">
