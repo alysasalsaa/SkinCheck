@@ -44,6 +44,7 @@ interface Recommendation {
   ingredient_match_pct: number;
   synergy_pct: number;
   bpom_pct: number;
+  history_pct: number;
   total_pct: number;
   confidence_pct: number;
   matched_ingredients: string[];
@@ -440,7 +441,7 @@ export default function Assessment() {
                       alternatives={byCategory[cat].slice(1)}
                       routineStep={CATEGORY_ORDER.indexOf(cat) + 1}
                       routineTotal={CATEGORY_ORDER.length}
-                      userInput={{ skinType, conditions, hamil, budget }}
+                      userInput={{ skinType, conditions, hamil, budget, likedProducts, dislikedProducts }}
                     />
                   ))}
                   {!results?.length && (
@@ -552,7 +553,7 @@ function ProductCard({
   alternatives: Recommendation[];
   routineStep: number;
   routineTotal: number;
-  userInput: { skinType: string | null; conditions: string[]; hamil: boolean | null; budget: string };
+  userInput: { skinType: string | null; conditions: string[]; hamil: boolean | null; budget: string; likedProducts: string[]; dislikedProducts: string[] };
 }) {
   const [decisionOpen, setDecisionOpen] = useState(false);
   const [consultantOpen, setConsultantOpen] = useState(false);
@@ -566,6 +567,20 @@ function ProductCard({
   if (r.total_pct >= 90) badge = { label: "Highly Recommended", bg: "bg-success-light", fg: "text-success" };
   else if (r.total_pct >= 75) badge = { label: "Good Match", bg: "bg-warning-light", fg: "text-warning" };
 
+  // Pertanyaan dinamis, khusus muncul kalau user pernah isi produk yang
+  // "tidak cocok" -- 1 pertanyaan per produk yang diisi, karena nama
+  // produknya beda-beda tergantung input user.
+  const dynamicQuestions: QA[] = userInput.dislikedProducts.map((dp) => ({
+    q: `Kenapa produk ini cocok untukmu yang tidak cocok pakai ${dp}?`,
+    getAnswer: (rec) => {
+      if (rec.disliked_ingredient_matches?.length > 0) {
+        return `${dp} kemungkinan mengandung ${rec.disliked_ingredient_matches.join(", ")}, yang menurut riwayatmu kurang cocok. Produk ini sebenarnya JUGA mengandung ${rec.disliked_ingredient_matches.join(", ")} -- jadi skornya sudah kami turunkan (${rec.history_pct} poin dari komponen preferensi). Tetap muncul karena faktor lain (kecocokan tipe kulit, sinergi bahan) masih kuat, tapi pertimbangkan dulu atau cek alternatif lain di kategori ini.`;
+      }
+      return `${dp} kemungkinan mengandung kandungan yang menurut riwayatmu kurang cocok. Produk ini TIDAK terdeteksi mengandung kandungan yang sama, jadi risiko reaksi serupa lebih kecil. Produk ini mengandung ${rec.matched_ingredients?.length ? rec.matched_ingredients.join(", ") : "kandungan lain"} yang sesuai kebutuhanmu.`;
+    },
+  }));
+  const allQuestions = [...SUGGESTED_QUESTIONS, ...dynamicQuestions];
+
   async function askQuestion(q: string) {
     if (activeQ === q) {
       setActiveQ(null);
@@ -576,7 +591,7 @@ function ProductCard({
     setUsedFallback(false);
     setIsLoadingAnswer(true);
 
-    const templateAnswer = SUGGESTED_QUESTIONS.find((sq) => sq.q === q)?.getAnswer(r, alternatives, routineStep, routineTotal, category) ?? "";
+    const templateAnswer = allQuestions.find((sq) => sq.q === q)?.getAnswer(r, alternatives, routineStep, routineTotal, category) ?? "";
 
     try {
       const res = await fetch("/api/consultant", {
@@ -590,6 +605,12 @@ function ProductCard({
           confidence: r.confidence_pct,
           constraints: { pregnancy_status: r.pregnancy_safe_status, price_idr: r.price_idr, bpom_status: r.bpom_status },
           routine: { category, step_ke: routineStep, total_langkah: routineTotal, urutan_kategori: "Cleanser, Toner, Serum, Moisturizer, Sunscreen" },
+          preference: {
+            produk_cocok_sebelumnya: userInput.likedProducts,
+            produk_tidak_cocok_sebelumnya: userInput.dislikedProducts,
+            kandungan_match_cocok: r.liked_ingredient_matches,
+            kandungan_match_tidak_cocok: r.disliked_ingredient_matches,
+          },
         }),
       });
       if (!res.ok) throw new Error("request failed");
@@ -679,7 +700,7 @@ function ProductCard({
             className="overflow-hidden"
           >
             <div className="mt-3 flex flex-col gap-1.5 border-t border-slate-100 pt-3">
-              {SUGGESTED_QUESTIONS.map((sq) => (
+              {allQuestions.map((sq) => (
                 <button
                   key={sq.q}
                   onClick={() => askQuestion(sq.q)}
@@ -965,10 +986,11 @@ function DecisionProcessDrawer({
   r, userInput, onClose,
 }: {
   r: Recommendation;
-  userInput: { skinType: string | null; conditions: string[]; hamil: boolean | null; budget: string };
+  userInput: { skinType: string | null; conditions: string[]; hamil: boolean | null; budget: string; likedProducts: string[]; dislikedProducts: string[] };
   onClose: () => void;
 }) {
   const [visibleSteps, setVisibleSteps] = useState(0);
+  const hasHistory = userInput.likedProducts.length > 0 || userInput.dislikedProducts.length > 0;
   const steps = [
     {
       title: "Input",
@@ -1001,6 +1023,28 @@ function DecisionProcessDrawer({
     {
       title: "Synergy Check",
       content: <p className="text-xs text-slate-600">Skor sinergi kandungan: <b className={r.synergy_pct >= 0 ? "text-success" : "text-warning"}>{r.synergy_pct > 0 ? `+${r.synergy_pct}` : r.synergy_pct}</b></p>,
+    },
+    {
+      title: "Personal Preference",
+      content: !hasHistory ? (
+        <p className="text-xs text-slate-500">Nggak ada riwayat produk cocok/tidak cocok yang diisi -- komponen ini nggak berpengaruh ke skor.</p>
+      ) : (
+        <div className="flex flex-col gap-1.5 text-xs text-slate-600">
+          {userInput.likedProducts.length > 0 && (
+            <p>Dicek terhadap produk cocok: <b className="text-success">{userInput.likedProducts.join(", ")}</b></p>
+          )}
+          {userInput.dislikedProducts.length > 0 && (
+            <p>Dicek terhadap produk tidak cocok: <b className="text-red-600">{userInput.dislikedProducts.join(", ")}</b></p>
+          )}
+          {r.liked_ingredient_matches?.length > 0 && (
+            <p className="text-success">✓ Match kandungan cocok: {r.liked_ingredient_matches.join(", ")}</p>
+          )}
+          {r.disliked_ingredient_matches?.length > 0 && (
+            <p className="text-red-600">⚠ Match kandungan tidak cocok: {r.disliked_ingredient_matches.join(", ")}</p>
+          )}
+          <p>Dampak ke skor: <b className={r.history_pct >= 0 ? "text-success" : "text-red-600"}>{r.history_pct > 0 ? `+${r.history_pct}` : r.history_pct}</b></p>
+        </div>
+      ),
     },
     {
       title: "Ranking",

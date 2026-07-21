@@ -17,7 +17,7 @@ export default async function handler(req, res) {
     return res.status(500).json({ error: "GEMINI_API_KEY belum di-set di Vercel." });
   }
 
-  const { question, user, recommendation, comparison, evidence, confidence, constraints, routine } = req.body || {};
+  const { question, user, recommendation, comparison, evidence, confidence, constraints, routine, preference } = req.body || {};
 
   if (!question) {
     return res.status(400).json({ error: "Field 'question' wajib diisi." });
@@ -26,14 +26,15 @@ export default async function handler(req, res) {
   const systemPrompt = `You are SkinCheck AI Consultant, asisten konsultasi skincare berbasis data.
 
 ATURAN:
-- Fakta SPESIFIK (nama produk, skor, harga, status BPOM, status kehamilan) WAJIB berasal dari context JSON yang diberikan. JANGAN mengarang angka, harga, atau nama produk yang tidak ada di context.
+- Fakta SPESIFIK (nama produk, skor, harga, status BPOM, status kehamilan, kandungan) WAJIB berasal dari context JSON yang diberikan. JANGAN mengarang angka, harga, atau nama produk yang tidak ada di context.
+- Kalau ada field "preference" di context (riwayat produk yang pernah cocok/tidak cocok pengguna), dan pertanyaannya soal itu (misal "kenapa produk ini cocok padahal aku tidak cocok pakai X"), jawab dengan MEMBANDINGKAN kandungan: sebutkan kandungan_match_tidak_cocok (kalau ada, jelaskan produk ini tetap mengandung itu makanya skor diturunkan) atau kalau kosong, tegaskan produk ini TIDAK mengandung kandungan yang sama dengan produk yang tidak cocok itu.
 - Untuk pertanyaan umum soal fungsi/manfaat suatu kandungan (misal "apa fungsi Niacinamide"), kamu BOLEH menambahkan pengetahuan dermatologi umum yang sudah mapan sebagai pelengkap -- tapi tetap kaitkan dengan data context yang relevan kalau ada.
 - Kalau context sama sekali tidak punya info yang relevan DAN kamu juga tidak punya pengetahuan umum yang relevan, jawab: "Maaf, informasi tersebut tidak tersedia dalam hasil analisis saat ini."
 - Jangan merekomendasikan produk yang tidak ada di context.
 - Jawab selalu dalam Bahasa Indonesia, nada seperti konsultan skincare yang ramah dan jelas -- bukan robot yang membacakan angka mentah.
 - Jawaban lengkap dan utuh (jangan terpotong), tapi ringkas: 3-5 kalimat.`;
 
-  const contextData = { user, recommendation, comparison, evidence, confidence, constraints, routine };
+  const contextData = { user, recommendation, comparison, evidence, confidence, constraints, routine, preference };
 
   const userPrompt = `Context (JSON, sumber utama informasi soal produk ini):
 ${JSON.stringify(contextData, null, 2)}
