@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Loader2,
   Droplets, Sun, RotateCcw, MessageCircle, GitCompare, TriangleAlert, CircleCheck,
-  Target, Brain, FileText, Trophy, Scale, Workflow,
+  Target, Brain, FileText, Trophy, Scale, Workflow, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -617,9 +617,11 @@ function ProductCard({
         <Workflow size={13} /> Lihat Proses Keputusan AI
       </button>
 
-      {decisionOpen && (
-        <DecisionProcessDrawer r={r} userInput={userInput} onClose={() => setDecisionOpen(false)} />
-      )}
+      <AnimatePresence>
+        {decisionOpen && (
+          <DecisionProcessDrawer r={r} userInput={userInput} onClose={() => setDecisionOpen(false)} />
+        )}
+      </AnimatePresence>
 
       <button
         onClick={() => { setConsultantOpen(!consultantOpen); setActiveQ(null); }}
@@ -986,10 +988,18 @@ function DecisionProcessDrawer({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center" onClick={onClose}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 sm:items-center"
+      onClick={onClose}
+    >
       <motion.div
         initial={{ y: 40, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
+        exit={{ y: 40, opacity: 0 }}
         transition={{ duration: 0.25 }}
         onClick={(e) => e.stopPropagation()}
         className="max-h-[85vh] w-full max-w-sm overflow-y-auto rounded-t-3xl bg-white p-6 sm:rounded-3xl"
@@ -997,7 +1007,7 @@ function DecisionProcessDrawer({
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-base font-bold text-ink">Proses Keputusan AI</h3>
           <button onClick={onClose} className="text-slate-400">
-            <RotateCcw size={16} className="rotate-45" />
+            <X size={18} />
           </button>
         </div>
 
@@ -1024,6 +1034,6 @@ function DecisionProcessDrawer({
           ))}
         </div>
       </motion.div>
-    </div>
+    </motion.div>
   );
 }
