@@ -1005,7 +1005,17 @@ function DecisionProcessDrawer({
     },
     {
       title: "Constraint Engine",
-      content: <p className="text-xs text-slate-600">Produk ini lolos semua syarat wajib: <b className="text-success">BPOM terdaftar, sesuai budget, aman untuk profil kehamilan kamu.</b></p>,
+      content: (
+        <p className="text-xs text-slate-600">
+          Produk ini lolos semua syarat wajib: <b className="text-success">
+            {[
+              "BPOM terdaftar",
+              userInput.budget ? "sesuai budget" : null,
+              userInput.hamil ? "aman untuk profil kehamilan kamu" : null,
+            ].filter(Boolean).join(", ")}.
+          </b>
+        </p>
+      ),
     },
     {
       title: "Evidence-Aware Engine",
