@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Search, FlaskConical, ChevronDown, ShieldAlert, ShieldCheck, ShieldQuestion } from "lucide-react";
+import { Search, FlaskConical, ChevronDown, ShieldAlert, ShieldCheck, ShieldQuestion, Sparkles, HelpCircle } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 
 const SUPABASE_URL = "https://ncdbcxhnkpzgmoioxskg.supabase.co";
 const SUPABASE_KEY = "sb_publishable_WjZblozn_J7IhWpOWJ2MLw_ApxuFN2w";
+
+interface FaqItem { q: string; a: string; }
 
 interface Ingredient {
   ingredient_name: string;
@@ -14,6 +16,8 @@ interface Ingredient {
   pregnancy_safety: "aman" | "perlu_konsultasi" | "tidak_aman";
   avoid_combination_with: string[];
   notes: string | null;
+  ai_summary: string | null;
+  ai_faq: FaqItem[] | null;
 }
 
 const PREGNANCY_BADGE = {
@@ -28,6 +32,7 @@ export default function Ingredients() {
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [expanded, setExpanded] = useState<string | null>(null);
+  const [openFaq, setOpenFaq] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`${SUPABASE_URL}/rest/v1/ingredients_knowledge?select=*&order=ingredient_name.asc`, {
@@ -117,7 +122,17 @@ export default function Ingredients() {
                     </div>
                     <ChevronDown size={16} className={`mt-1 shrink-0 text-slate-400 transition-transform ${isOpen ? "rotate-180" : ""}`} />
                   </button>
-                  <p className="mt-2 text-sm leading-relaxed text-slate-500">{ing.benefits}</p>
+
+                  {/* AI Summary -- ini AI Knowledge Card, bukan chatbot. Pre-generated sekali via
+                      Gemini (offline), disimpan di database. Nggak ada panggilan API tiap dibuka. */}
+                  {ing.ai_summary ? (
+                    <div className="mt-2 flex items-start gap-1.5">
+                      <Sparkles size={13} className="mt-0.5 shrink-0 text-primary" />
+                      <p className="text-sm leading-relaxed text-slate-500">{ing.ai_summary}</p>
+                    </div>
+                  ) : (
+                    <p className="mt-2 text-sm leading-relaxed text-slate-500">{ing.benefits}</p>
+                  )}
 
                   <AnimatePresence>
                     {isOpen && (
@@ -144,6 +159,33 @@ export default function Ingredients() {
                             </p>
                           )}
                           {ing.notes && <p className="text-xs italic text-slate-400">{ing.notes}</p>}
+
+                          {/* Pertanyaan Populer -- instant, tanpa API, dari ai_faq yang sudah disimpan */}
+                          {ing.ai_faq && ing.ai_faq.length > 0 && (
+                            <div className="mt-2">
+                              <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-600">
+                                <HelpCircle size={12} /> Pertanyaan Populer
+                              </div>
+                              <div className="mt-1.5 flex flex-col gap-1">
+                                {ing.ai_faq.map((faq) => {
+                                  const faqKey = `${ing.ingredient_name}::${faq.q}`;
+                                  const faqOpen = openFaq === faqKey;
+                                  return (
+                                    <div key={faq.q} className="rounded-lg bg-slate-50 p-2.5">
+                                      <button
+                                        onClick={() => setOpenFaq(faqOpen ? null : faqKey)}
+                                        className="flex w-full items-center justify-between text-left text-xs font-semibold text-slate-700"
+                                      >
+                                        {faq.q}
+                                        <ChevronDown size={12} className={`shrink-0 transition-transform ${faqOpen ? "rotate-180" : ""}`} />
+                                      </button>
+                                      {faqOpen && <p className="mt-1.5 text-xs leading-relaxed text-slate-500">{faq.a}</p>}
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </motion.div>
                     )}
