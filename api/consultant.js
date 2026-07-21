@@ -54,8 +54,7 @@ Jawab pertanyaan di atas berdasarkan context JSON ini, dilengkapi pengetahuan um
           systemInstruction: { parts: [{ text: systemPrompt }] },
           generationConfig: {
             temperature: 0.4,
-            maxOutputTokens: 500,
-            thinkingConfig: { thinkingBudget: 0 },
+            maxOutputTokens: 800,
           },
         }),
       }
