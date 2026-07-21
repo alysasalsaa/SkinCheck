@@ -48,6 +48,8 @@ interface Recommendation {
   confidence_pct: number;
   matched_ingredients: string[];
   avoided_ingredients: string[];
+  liked_ingredient_matches: string[];
+  disliked_ingredient_matches: string[];
   evidence_tier: "L1" | "L2" | "L3";
   evidence_level: string;
   explanation: string;
@@ -63,11 +65,26 @@ export default function Assessment() {
   const [conditions, setConditions] = useState<string[]>([]);
   const [hamil, setHamil] = useState<boolean | null>(null);
   const [budget, setBudget] = useState("");
+  const [likedProducts, setLikedProducts] = useState<string[]>([]);
+  const [dislikedProducts, setDislikedProducts] = useState<string[]>([]);
+  const [likedInput, setLikedInput] = useState("");
+  const [dislikedInput, setDislikedInput] = useState("");
   const [analysisIdx, setAnalysisIdx] = useState(0);
   const [results, setResults] = useState<Recommendation[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const totalQuestions = 5;
+  const totalQuestions = 6;
+
+  function addLiked() {
+    const v = likedInput.trim();
+    if (v && !likedProducts.includes(v)) setLikedProducts((p) => [...p, v]);
+    setLikedInput("");
+  }
+  function addDisliked() {
+    const v = dislikedInput.trim();
+    if (v && !dislikedProducts.includes(v)) setDislikedProducts((p) => [...p, v]);
+    setDislikedInput("");
+  }
 
   function toggleCondition(c: string) {
     setConditions((prev) => (prev.includes(c) ? prev.filter((x) => x !== c) : [...prev, c]));
@@ -94,7 +111,7 @@ export default function Assessment() {
     const started = Date.now();
     try {
       const budgetVal = budget ? parseInt(budget, 10) * 1000 : null;
-      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_skincare_recommendations_v6`, {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/rpc/get_skincare_recommendations_v7`, {
         method: "POST",
         headers: {
           apikey: SUPABASE_KEY,
@@ -107,6 +124,8 @@ export default function Assessment() {
           p_hamil: hamil === true,
           p_conditions: conditions,
           p_budget: budgetVal,
+          p_liked_products: likedProducts,
+          p_disliked_products: dislikedProducts,
           p_limit_per_category: 3,
         }),
       });
@@ -135,6 +154,10 @@ export default function Assessment() {
     setConditions([]);
     setHamil(null);
     setBudget("");
+    setLikedProducts([]);
+    setDislikedProducts([]);
+    setLikedInput("");
+    setDislikedInput("");
     setResults(null);
     setError(null);
   }
@@ -258,6 +281,56 @@ export default function Assessment() {
                         className="w-full rounded-xl border border-slate-200 bg-white py-3.5 pl-10 pr-14 text-base outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
                       />
                       <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">ribu</span>
+                    </div>
+                  </>
+                )}
+                {step === 5 && (
+                  <>
+                    <h2 className="mb-1 text-xl font-extrabold text-ink">Pernah pakai skincare sebelumnya?</h2>
+                    <p className="mb-4 text-sm text-slate-400">Opsional -- bantu kami hindari kandungan yang pernah bikin kulitmu nggak cocok</p>
+
+                    <div className="mb-5">
+                      <label className="mb-1.5 block text-xs font-bold text-success">✓ Produk yang cocok</label>
+                      <div className="flex gap-2">
+                        <input
+                          value={likedInput}
+                          onChange={(e) => setLikedInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addLiked(); } }}
+                          placeholder="misal: Serum Avoskin Lactic Acid"
+                          className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
+                        />
+                        <Button onClick={addLiked} type="button" variant="outline" className="shrink-0 rounded-xl border-slate-300 px-4">Tambah</Button>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {likedProducts.map((p) => (
+                          <span key={p} className="flex items-center gap-1 rounded-full bg-success-light px-3 py-1 text-xs font-medium text-success">
+                            {p}
+                            <button onClick={() => setLikedProducts((arr) => arr.filter((x) => x !== p))} className="ml-0.5"><X size={12} /></button>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="mb-1.5 block text-xs font-bold text-red-600">✕ Produk yang tidak cocok</label>
+                      <div className="flex gap-2">
+                        <input
+                          value={dislikedInput}
+                          onChange={(e) => setDislikedInput(e.target.value)}
+                          onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addDisliked(); } }}
+                          placeholder="misal: Hanasui Serum Vit C"
+                          className="flex-1 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-primary-light"
+                        />
+                        <Button onClick={addDisliked} type="button" variant="outline" className="shrink-0 rounded-xl border-slate-300 px-4">Tambah</Button>
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-1.5">
+                        {dislikedProducts.map((p) => (
+                          <span key={p} className="flex items-center gap-1 rounded-full bg-red-50 px-3 py-1 text-xs font-medium text-red-600">
+                            {p}
+                            <button onClick={() => setDislikedProducts((arr) => arr.filter((x) => x !== p))} className="ml-0.5"><X size={12} /></button>
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </>
                 )}
