@@ -13,10 +13,10 @@ const NAV_LINKS = [
 ];
 
 /**
- * Alasan UX: navbar konsisten di semua halaman bikin user nggak "kehilangan
+ * Alasan UX: navbar konsisten di semua halaman membuat user tidak "kehilangan
  * arah" pas pindah halaman -- mereka selalu tau cara balik atau lanjut ke
- * Assessment dari mana aja. Menu hamburger di mobile penting -- tanpa itu,
- * link navigasi sama sekali nggak bisa diakses di HP.
+ * Assessment dari mana saja. Menu hamburger di mobile penting -- tanpa itu,
+ * link navigasi sama sekali tidak bisa diakses di HP.
  */
 export function Navbar() {
   const navigate = useNavigate();

@@ -175,7 +175,7 @@ export default function Assessment() {
   const topPicks = CATEGORY_ORDER.filter((c) => byCategory[c]?.length).map((c) => byCategory[c][0]);
   // "Best" = 1 produk representatif (skor total tertinggi) -- Skin Match,
   // Confidence, dan Evidence yang ditampilkan SEMUA soal produk yang SAMA,
-  // biar nggak ada kesan 2 angka yang saling bertentangan.
+  // agar tidak ada kesan 2 angka yang saling bertentangan.
   const bestPick = topPicks.length
     ? [...topPicks].sort((x, y) => y.total_pct - x.total_pct)[0]
     : null;
@@ -271,7 +271,7 @@ export default function Assessment() {
                 {step === 4 && (
                   <>
                     <h2 className="mb-1 text-xl font-extrabold text-ink">Budget maksimal per produk?</h2>
-                    <p className="mb-4 text-sm text-slate-400">Opsional - kosongkan kalau nggak ada batasan</p>
+                    <p className="mb-4 text-sm text-slate-400">Opsional - kosongkan apabila tidak ada batasan</p>
                     <div className="relative">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400">Rp</span>
                       <input
@@ -288,7 +288,7 @@ export default function Assessment() {
                 {step === 5 && (
                   <>
                     <h2 className="mb-1 text-xl font-extrabold text-ink">Pernah pakai skincare sebelumnya?</h2>
-                    <p className="mb-4 text-sm text-slate-400">Opsional -- bantu kami hindari kandungan yang pernah bikin kulitmu nggak cocok</p>
+                    <p className="mb-4 text-sm text-slate-400">Opsional -- bantu kami menghindari kandungan yang pernah membuat kulitmu tidak cocok</p>
 
                     <div className="mb-5">
                       <label className="mb-1.5 block text-xs font-bold text-success">✓ Produk yang cocok</label>
@@ -499,11 +499,11 @@ interface QA {
 
 // Semua jawaban disusun dari data Recommendation Engine (Knowledge Base + Explainable
 // Engine) yang SUDAH ADA -- bukan LLM yang mikir/mengarang sendiri. Kalau nanti mau
-// nambah LLM, posisinya cuma "menghaluskan bahasa" dari jawaban template ini, fakta di
+// menambah LLM, posisinya hanya "menghaluskan bahasa" dari jawaban template ini, fakta di
 // dalamnya tetap sama persis.
 const SUGGESTED_QUESTIONS: QA[] = [
   {
-    q: "Kenapa produk ini cocok?",
+    q: "Mengapa produk ini cocok?",
     getAnswer: (r) => r.explanation || "Belum ada data penjelasan lengkap untuk produk ini.",
   },
   {
@@ -571,7 +571,7 @@ function ProductCard({
   // "tidak cocok" -- 1 pertanyaan per produk yang diisi, karena nama
   // produknya beda-beda tergantung input user.
   const dynamicQuestions: QA[] = userInput.dislikedProducts.map((dp) => ({
-    q: `Kenapa produk ini cocok untukmu yang tidak cocok pakai ${dp}?`,
+    q: `Mengapa produk ini cocok untukmu yang tidak cocok menggunakan ${dp}?`,
     getAnswer: (rec) => {
       if (rec.disliked_ingredient_matches?.length > 0) {
         return `${dp} kemungkinan mengandung ${rec.disliked_ingredient_matches.join(", ")}, yang menurut riwayatmu kurang cocok. Produk ini sebenarnya JUGA mengandung ${rec.disliked_ingredient_matches.join(", ")} -- jadi skornya sudah kami turunkan (${rec.history_pct} poin dari komponen preferensi). Tetap muncul karena faktor lain (kecocokan tipe kulit, sinergi bahan) masih kuat, tapi pertimbangkan dulu atau cek alternatif lain di kategori ini.`;
@@ -618,7 +618,7 @@ function ProductCard({
       setLlmAnswer(data.answer || templateAnswer);
       if (!data.answer) setUsedFallback(true);
     } catch {
-      // LLM gagal (offline, quota, dsb) -- fallback ke jawaban template biar demo tetap jalan
+      // LLM gagal (offline, quota, dsb) -- fallback ke jawaban template agar demo tetap berjalan
       setLlmAnswer(templateAnswer);
       setUsedFallback(true);
     } finally {
@@ -787,7 +787,7 @@ function ComparePanel({
     { label: "Total Score", av: a.total_pct, bv: b.total_pct, max: 100 },
   ];
 
-  // Faktor yang bikin winner unggul, diurutkan dari selisih poin terbesar.
+  // Faktor yang membuat winner unggul, diurutkan dari selisih poin terbesar.
   const factorDiffs = [
     { label: "Skin Match", diff: winner.skin_match_pct - loser.skin_match_pct },
     { label: "Ingredient Match", diff: winner.ingredient_match_pct - loser.ingredient_match_pct },
@@ -795,7 +795,7 @@ function ComparePanel({
     { label: "BPOM", diff: winner.bpom_pct - loser.bpom_pct },
   ].filter((f) => f.diff > 0).sort((x, y) => y.diff - x.diff);
 
-  // === AI Verdict: menjelaskan KENAPA, bukan cuma ngulang skor ===
+  // === AI Verdict: menjelaskan KENAPA, bukan hanya mengulang skor ===
   let verdictText: string;
   if (isFullyIdentical) {
     verdictText = `Kedua produk memiliki skor akhir yang sama persis di semua komponen. Keduanya sama-sama direkomendasikan -- silakan pilih berdasarkan preferensi harga atau tekstur.`;
@@ -809,7 +809,7 @@ function ComparePanel({
     verdictText = `${winner.title} dipilih karena skor totalnya sedikit lebih tinggi secara keseluruhan (${winner.total_pct}% vs ${loser.total_pct}%).`;
   }
 
-  // === Why Not: menjelaskan TRADE-OFF, bukan cuma "skor lebih rendah" ===
+  // === Why Not: menjelaskan TRADE-OFF, bukan hanya "skor lebih rendah" ===
   const tradeoffs: string[] = [];
   if (loser.price_idr && winner.price_idr && loser.price_idr > winner.price_idr) {
     tradeoffs.push(`Harga sedikit lebih tinggi: Rp${loser.price_idr.toLocaleString("id-ID")} vs Rp${winner.price_idr.toLocaleString("id-ID")}`);
@@ -961,14 +961,14 @@ function ComparePanel({
   );
 }
 
-/** Efek teks muncul kayak diketik -- bikin jawaban LLM kerasa "hidup", bukan dump teks langsung. */
+/** Efek teks muncul seperti diketik -- membuat jawaban LLM terasa "hidup", bukan dump teks langsung. */
 function TypewriterText({ text, speed = 12 }: { text: string; speed?: number }) {
   const [shown, setShown] = useState("");
   useEffect(() => {
     setShown("");
     let i = 0;
     const interval = setInterval(() => {
-      i += 2; // 2 karakter per tick biar nggak kelamaan buat jawaban panjang
+      i += 2; // 2 karakter per tick agar tidak terlalu lama buat jawaban panjang
       setShown(text.slice(0, i));
       if (i >= text.length) clearInterval(interval);
     }, speed);
@@ -980,7 +980,7 @@ function TypewriterText({ text, speed = 12 }: { text: string; speed?: number }) 
 /**
  * AI Decision Process -- drawer yang nunjukin pipeline keputusan sesungguhnya,
  * pakai angka ASLI dari hasil Recommendation Engine v6 (bukan animasi generik
- * kayak loading screen). Tiap tahap muncul berurutan biar kerasa alurnya.
+ * seperti loading screen). Tiap tahap muncul berurutan agar terasa alurnya.
  */
 function DecisionProcessDrawer({
   r, userInput, onClose,
@@ -1037,7 +1037,7 @@ function DecisionProcessDrawer({
     {
       title: "Personal Preference",
       content: !hasHistory ? (
-        <p className="text-xs text-slate-500">Nggak ada riwayat produk cocok/tidak cocok yang diisi -- komponen ini nggak berpengaruh ke skor.</p>
+        <p className="text-xs text-slate-500">Tidak ada riwayat produk cocok/tidak cocok yang diisi -- komponen ini tidak berpengaruh terhadap skor.</p>
       ) : (
         <div className="flex flex-col gap-1.5 text-xs text-slate-600">
           {userInput.likedProducts.length > 0 && (

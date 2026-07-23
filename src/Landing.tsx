@@ -137,7 +137,7 @@ export default function Landing() {
       {/* ================= WHY DIFFERENT ================= */}
       <section id="technology" className="mx-auto max-w-[1200px] px-6 py-20 md:py-28">
         <SectionTitle
-          eyebrow="Kenapa Berbeda"
+          eyebrow="Mengapa Berbeda"
           title="Mengapa AI Kami Berbeda"
           subtitle="Bukan sekadar chatbot yang menjawab pertanyaan, ini sistem yang benar-benar menganalisis sebelum merekomendasikan."
         />
@@ -158,7 +158,7 @@ export default function Landing() {
             index={2}
             icon={MessageSquareText}
             title="Explainable Recommendation"
-            description="Bukan cuma daftar produk. Sistem menjelaskan kandungan apa yang cocok dan kenapa, dalam bahasa yang mudah dipahami."
+            description="Bukan hanya daftar produk. Sistem menjelaskan kandungan apa yang cocok dan mengapa, dalam bahasa yang mudah dipahami."
           />
         </div>
       </section>
@@ -236,7 +236,7 @@ export default function Landing() {
               { icon: ClipboardList, title: "Skin Assessment", description: "Jawab beberapa pertanyaan singkat soal kulit, kondisi, dan kebutuhanmu." },
               { icon: BrainCog, title: "AI Analysis", description: "Sistem mencocokkan profilmu dengan kandungan, keamanan, dan budget." },
               { icon: Target, title: "Recommendation", description: "Routine skincare tersusun per kategori, diurutkan berdasarkan skor kecocokan." },
-              { icon: MessageSquareText, title: "Explainable Result", description: "Tiap produk disertai alasan konkret kenapa direkomendasikan untukmu." },
+              { icon: MessageSquareText, title: "Explainable Result", description: "Tiap produk disertai alasan konkret mengapa direkomendasikan untukmu." },
             ]}
           />
         </div>
