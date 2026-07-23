@@ -75,7 +75,7 @@ export default function About() {
 
       <footer className="border-t border-slate-200 py-8">
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 px-6 text-sm text-slate-400 sm:flex-row">
-          <span>&copy; 2026 SkinCheck &mdash; Proyek GEMASTIK</span>
+          <span>&copy; 2026 SkinCheck - Proyek GEMASTIK</span>
           <span>Bukan pengganti konsultasi dokter kulit</span>
         </div>
       </footer>

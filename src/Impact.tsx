@@ -62,7 +62,7 @@ export default function Impact() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
           <span className="text-xs font-bold uppercase tracking-wider text-primary">AI Impact</span>
           <h1 className="mx-auto mt-2 max-w-2xl text-3xl font-extrabold leading-tight md:text-4xl">
-            Bukan Sekadar Rekomendasi &mdash; Dampak Nyata
+            Bukan Sekadar Rekomendasi, Dampak Nyata
           </h1>
           <p className="mx-auto mt-4 max-w-xl text-slate-500">
             SkinCheck dirancang untuk berkontribusi terhadap kesehatan masyarakat,
@@ -73,7 +73,7 @@ export default function Impact() {
 
       {/* ===== MENGAPA AI INI PENTING (Before/After) ===== */}
       <section className="mx-auto max-w-[1200px] px-6 py-16">
-        <SectionTitle eyebrow="Konteks" title="Mengapa AI Ini Penting?" subtitle="Bukan soal teknologinya — tapi soal dampaknya ke cara orang memilih skincare." />
+        <SectionTitle eyebrow="Konteks" title="Mengapa AI Ini Penting?" subtitle="Bukan soal teknologinya, tapi soal dampaknya ke cara orang memilih skincare." />
 
         <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2">
           {/* Sebelum */}
@@ -167,7 +167,7 @@ export default function Impact() {
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-3">
-          <StatCard icon={BadgeCheck} value="195+" label="Produk Lokal" delay={0.1} />
+          <StatCard icon={BadgeCheck} value="202+" label="Produk Lokal" delay={0.1} />
           <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.16} />
           <StatCard icon={Database} value="9" label="Brand Lokal" delay={0.22} />
           <StatCard icon={Globe2} value="4" label="SDGs Didukung" delay={0.28} />
@@ -199,7 +199,7 @@ export default function Impact() {
 
       <footer className="border-t border-slate-200 py-8">
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 px-6 text-sm text-slate-400 sm:flex-row">
-          <span>&copy; 2026 SkinCheck &mdash; Proyek GEMASTIK</span>
+          <span>&copy; 2026 SkinCheck - Proyek GEMASTIK</span>
           <span>Bukan pengganti konsultasi dokter kulit</span>
         </div>
       </footer>

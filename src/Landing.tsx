@@ -55,7 +55,7 @@ export default function Landing() {
             </h1>
 
             <p className="max-w-md text-base leading-relaxed text-slate-500">
-              AI Recommendation berbasis kandungan aktif dan data BPOM &mdash;
+              AI Recommendation berbasis kandungan aktif dan data BPOM,
               bukan sekadar tren media sosial.
             </p>
 
@@ -69,7 +69,7 @@ export default function Landing() {
             </div>
 
             <div className="mt-2 grid grid-cols-2 gap-3">
-              <StatCard icon={BadgeCheck} value="195+" label="Produk Lokal" delay={0.1} />
+              <StatCard icon={BadgeCheck} value="202+" label="Produk Lokal" delay={0.1} />
               <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.18} />
               <StatCard icon={Database} value="9" label="Brand Lokal" delay={0.26} />
               <StatCard icon={FlaskConical} value="33+" label="Kandungan Aktif" delay={0.34} />
@@ -139,20 +139,20 @@ export default function Landing() {
         <SectionTitle
           eyebrow="Kenapa Berbeda"
           title="Mengapa AI Kami Berbeda"
-          subtitle="Bukan sekadar chatbot yang menjawab pertanyaan &mdash; ini sistem yang benar-benar menganalisis sebelum merekomendasikan."
+          subtitle="Bukan sekadar chatbot yang menjawab pertanyaan, ini sistem yang benar-benar menganalisis sebelum merekomendasikan."
         />
         <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
           <FeatureCard
             index={0}
             icon={Database}
             title="Knowledge Base"
-            description="195 produk skincare lokal, kandungan aktif, dan status BPOM terverifikasi — bukan data yang diketik asal."
+            description="202 produk skincare lokal, kandungan aktif, dan status BPOM terverifikasi, bukan data yang diketik asal."
           />
           <FeatureCard
             index={1}
             icon={Eye}
             title="Evidence-Aware AI"
-            description="Tiap rekomendasi punya Evidence Level — transparan soal seberapa kuat data di baliknya, bukan menyembunyikan ketidakpastian."
+            description="Tiap rekomendasi punya Evidence Level, transparan soal seberapa kuat data di baliknya, bukan menyembunyikan ketidakpastian."
           />
           <FeatureCard
             index={2}
@@ -168,7 +168,7 @@ export default function Landing() {
         <SectionTitle
           eyebrow="Dampak terhadap SDGs"
           title="Mendukung Tujuan Pembangunan Berkelanjutan"
-          subtitle="Bukan sekadar proyek teknologi — dirancang untuk berkontribusi nyata terhadap Sustainable Development Goals."
+          subtitle="Bukan sekadar proyek teknologi, dirancang untuk berkontribusi nyata terhadap Sustainable Development Goals."
         />
 
         <div className="mt-12 grid grid-cols-1 gap-5 md:grid-cols-3">
@@ -216,7 +216,7 @@ export default function Landing() {
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-3">
-          <StatCard icon={BadgeCheck} value="195+" label="Produk Lokal" delay={0.1} />
+          <StatCard icon={BadgeCheck} value="202+" label="Produk Lokal" delay={0.1} />
           <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.16} />
           <StatCard icon={Database} value="9" label="Brand Lokal" delay={0.22} />
           <StatCard icon={Globe2} value="3" label="SDGs Didukung" delay={0.28} />
@@ -278,7 +278,7 @@ export default function Landing() {
       {/* ================= FOOTER ================= */}
       <footer className="border-t border-slate-200 py-8">
         <div className="mx-auto flex max-w-[1200px] flex-col items-center justify-between gap-3 px-6 text-sm text-slate-400 sm:flex-row">
-          <span>&copy; 2026 SkinCheck &mdash; Proyek GEMASTIK</span>
+          <span>&copy; 2026 SkinCheck - Proyek GEMASTIK</span>
           <span>Bukan pengganti konsultasi dokter kulit</span>
         </div>
       </footer>
