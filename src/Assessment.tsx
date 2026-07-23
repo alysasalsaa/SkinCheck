@@ -635,7 +635,7 @@ function ProductCard({
           <img
             src={r.image_url}
             alt={r.title}
-            className="h-14 w-14 shrink-0 rounded-lg border border-slate-100 object-contain bg-white"
+            className="h-14 w-14 min-h-14 min-w-14 shrink-0 rounded-lg border border-slate-100 object-contain bg-white"
             onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
             loading="lazy"
           />
