@@ -37,6 +37,7 @@ interface Recommendation {
   brand: string;
   title: string;
   category: string;
+  image_url: string | null;
   price_idr: number | null;
   bpom_status: string;
   pregnancy_safe_status: string;
@@ -630,9 +631,19 @@ function ProductCard({
   return (
     <motion.div whileHover={{ y: -3, boxShadow: "0 8px 20px rgba(15,23,42,0.08)" }} transition={{ duration: 0.2 }} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
       <div className="flex items-center gap-3">
-        <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-slate-100">
-          <Icon size={16} className="text-primary" />
-        </div>
+        {r.image_url ? (
+          <img
+            src={r.image_url}
+            alt={r.title}
+            className="h-14 w-14 shrink-0 rounded-lg border border-slate-100 object-contain bg-white"
+            onError={(e) => { (e.target as HTMLImageElement).style.display = "none"; }}
+            loading="lazy"
+          />
+        ) : (
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-lg bg-slate-100">
+            <Icon size={22} className="text-primary" />
+          </div>
+        )}
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-bold uppercase tracking-wide text-slate-400">{category}</p>
           <p className="truncate text-sm font-bold text-ink">{r.title}</p>
