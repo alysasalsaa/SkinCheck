@@ -106,7 +106,18 @@ export default function Assessment() {
         const res = await fetch("/api/photo-insight", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image_base64: base64, mime_type: file.type, skin_type: skinType, conditions }),
+          body: JSON.stringify({
+            image_base64: base64,
+            mime_type: file.type,
+            skin_type: skinType,
+            conditions,
+            recommended_products: topPicks.map((r) => ({
+              category: r.category,
+              name: r.title,
+              brand: r.brand,
+              matched_ingredients: r.matched_ingredients,
+            })),
+          }),
         });
         const data = await res.json();
         if (data.observation) setPhotoObservation(data.observation);
