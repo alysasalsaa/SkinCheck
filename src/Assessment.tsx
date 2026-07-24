@@ -7,6 +7,7 @@ import {
   Target, Brain, FileText, Trophy, Scale, Workflow, X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import SkinIcon, { SKIN_TYPE_ICON_MAP, CONCERN_ICON_MAP } from "@/components/SkinIcon";
 import { Badge } from "@/components/ui/badge";
 
 const SUPABASE_URL = "https://ncdbcxhnkpzgmoioxskg.supabase.co";
@@ -244,7 +245,10 @@ export default function Assessment() {
                     </h2>
                     {SKIN_TYPES.map((t) => (
                       <OptionButton key={t} selected={skinType === t} onClick={() => setSkinType(t)}>
-                        {t}
+                        <span className="flex items-center gap-3">
+                          <SkinIcon type={SKIN_TYPE_ICON_MAP[t]} size={36} />
+                          {t}
+                        </span>
                       </OptionButton>
                     ))}
                   </>
@@ -255,7 +259,10 @@ export default function Assessment() {
                     <p className="mb-4 text-sm text-slate-400">Boleh pilih lebih dari satu</p>
                     {CONDITIONS.map((c) => (
                       <OptionButton key={c} selected={conditions.includes(c)} onClick={() => toggleCondition(c)} multi>
-                        {c}
+                        <span className="flex items-center gap-3">
+                          <SkinIcon type={CONCERN_ICON_MAP[c]} size={36} />
+                          {c}
+                        </span>
                       </OptionButton>
                     ))}
                   </>
