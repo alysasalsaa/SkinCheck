@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Loader2,
   Droplets, Sun, RotateCcw, MessageCircle, GitCompare, TriangleAlert, CircleCheck,
-  Target, Brain, FileText, Trophy, Scale, Workflow, X,
+  Target, Brain, FileText, Trophy, Scale, Workflow, X, Camera,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SkinIcon, { SKIN_TYPE_ICON_MAP, CONCERN_ICON_MAP } from "@/components/SkinIcon";
@@ -72,6 +72,10 @@ export default function Assessment() {
   const [dislikedProducts, setDislikedProducts] = useState<string[]>([]);
   const [likedInput, setLikedInput] = useState("");
   const [dislikedInput, setDislikedInput] = useState("");
+  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
+  const [photoObservation, setPhotoObservation] = useState<string | null>(null);
+  const [photoLoading, setPhotoLoading] = useState(false);
+  const [photoError, setPhotoError] = useState<string | null>(null);
   const [analysisIdx, setAnalysisIdx] = useState(0);
   const [results, setResults] = useState<Recommendation[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -87,6 +91,39 @@ export default function Assessment() {
     const v = dislikedInput.trim();
     if (v && !dislikedProducts.includes(v)) setDislikedProducts((p) => [...p, v]);
     setDislikedInput("");
+  }
+
+  async function handlePhotoUpload(file: File) {
+    setPhotoError(null);
+    setPhotoObservation(null);
+    const reader = new FileReader();
+    reader.onload = async () => {
+      const dataUrl = reader.result as string;
+      setPhotoPreview(dataUrl);
+      const base64 = dataUrl.split(",")[1];
+      setPhotoLoading(true);
+      try {
+        const res = await fetch("/api/photo-insight", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ image_base64: base64, mime_type: file.type, skin_type: skinType, conditions }),
+        });
+        const data = await res.json();
+        if (data.observation) setPhotoObservation(data.observation);
+        else setPhotoError("Foto tidak bisa dianalisis. Coba foto lain, atau lewati fitur ini.");
+      } catch {
+        setPhotoError("Gagal menghubungi server. Coba lagi, atau lewati fitur ini.");
+      } finally {
+        setPhotoLoading(false);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+
+  function clearPhoto() {
+    setPhotoPreview(null);
+    setPhotoObservation(null);
+    setPhotoError(null);
   }
 
   function toggleCondition(c: string) {
@@ -161,6 +198,9 @@ export default function Assessment() {
     setDislikedProducts([]);
     setLikedInput("");
     setDislikedInput("");
+    setPhotoPreview(null);
+    setPhotoObservation(null);
+    setPhotoError(null);
     setResults(null);
     setError(null);
   }
@@ -399,6 +439,59 @@ export default function Assessment() {
                   <ReportRow label="Tipe Kulit" value={skinType ?? "-"} />
                   <ReportRow label="Concern" value={conditions.length ? conditions.join(", ") : "Tidak ada spesifik"} />
                   <ReportRow label="Hamil / Menyusui" value={hamil ? "Ya" : "Tidak"} last />
+                </div>
+
+                {/* Analisis Foto -- OPSIONAL, terpisah dari Recommendation Engine.
+                    Nggak mempengaruhi skor/rekomendasi sama sekali, murni observasi
+                    kualitatif tambahan. Ditaruh di luar wizard biar jelas ini bukan
+                    input yang menentukan hasil. */}
+                <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <div className="flex items-center gap-2">
+                    <Camera size={16} className="text-primary" />
+                    <p className="text-sm font-bold text-ink">Analisis Foto (Opsional)</p>
+                  </div>
+                  <p className="mt-1 text-xs text-slate-500">
+                    Observasi visual umum dari AI berdasarkan foto wajahmu -- bukan diagnosis medis, dan tidak mengubah rekomendasi di atas.
+                  </p>
+
+                  {!photoPreview ? (
+                    <label className="mt-3 flex cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed border-slate-200 py-6 text-slate-400 transition-colors hover:border-primary hover:text-primary">
+                      <Camera size={22} />
+                      <span className="text-xs font-semibold">Upload foto wajah</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePhotoUpload(f); }}
+                      />
+                    </label>
+                  ) : (
+                    <div className="mt-3">
+                      <div className="relative">
+                        <img src={photoPreview} alt="Foto yang diupload" className="mx-auto max-h-48 rounded-xl object-contain" />
+                        <button onClick={clearPhoto} className="absolute right-2 top-2 rounded-full bg-white/90 p-1.5 shadow">
+                          <X size={14} className="text-slate-600" />
+                        </button>
+                      </div>
+
+                      {photoLoading && (
+                        <p className="mt-3 flex items-center justify-center gap-2 text-xs text-slate-400">
+                          <Loader2 size={14} className="animate-spin" /> Menganalisis foto...
+                        </p>
+                      )}
+                      {photoObservation && (
+                        <div className="mt-3 rounded-xl bg-primary-light p-3">
+                          <p className="text-xs leading-relaxed text-primary-dark">{photoObservation}</p>
+                        </div>
+                      )}
+                      {photoError && (
+                        <p className="mt-3 text-xs text-red-600">{photoError}</p>
+                      )}
+                    </div>
+                  )}
+                  <p className="mt-3 text-[10px] text-slate-400">
+                    Foto tidak disimpan di server kami. Untuk kekhawatiran spesifik soal kondisi kulit, konsultasikan ke dokter kulit/dermatolog.
+                  </p>
                 </div>
 
                 {bestPick && (
