@@ -445,10 +445,12 @@ export default function Assessment() {
                     Nggak mempengaruhi skor/rekomendasi sama sekali, murni observasi
                     kualitatif tambahan. Ditaruh di luar wizard biar jelas ini bukan
                     input yang menentukan hasil. */}
-                <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                <div className="mt-4 rounded-2xl border-2 border-primary-light bg-white p-5 shadow-sm">
                   <div className="flex items-center gap-2">
                     <Camera size={16} className="text-primary" />
-                    <p className="text-sm font-bold text-ink">Analisis Foto (Opsional)</p>
+                    <p className="text-sm font-bold text-ink">Analisis Foto</p>
+                    <span className="rounded-full bg-gold px-2 py-0.5 text-[10px] font-bold text-white">Fitur Baru</span>
+                    <span className="ml-auto rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-semibold text-slate-500">Opsional</span>
                   </div>
                   <p className="mt-1 text-xs text-slate-500">
                     Observasi visual umum dari AI berdasarkan foto wajahmu -- bukan diagnosis medis, dan tidak mengubah rekomendasi di atas.
