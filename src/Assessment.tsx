@@ -571,7 +571,7 @@ export default function Assessment() {
               <Button onClick={resetAll} variant="outline" className="w-full gap-2 rounded-xl border-slate-300">
                 <RotateCcw size={15} /> Analisis Ulang
               </Button>
-              <Link to="/" className="w-full">
+              <Link to="/" state={{ fromReport: true }} className="w-full">
                 <Button variant="outline" className="w-full gap-2 rounded-xl border-slate-300">
                   <Home size={15} /> Kembali ke Beranda
                 </Button>

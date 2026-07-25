@@ -18,6 +18,7 @@ import { Navbar } from "@/components/Navbar";
 export default function Landing() {
   const navigate = useNavigate();
   const location = useLocation();
+  const fromReport = Boolean((location.state as { fromReport?: boolean } | null)?.fromReport);
 
   useEffect(() => {
     if (location.hash) {
@@ -61,7 +62,7 @@ export default function Landing() {
 
             <div className="flex flex-wrap items-center gap-3">
               <Button onClick={() => navigate("/assessment")} size="lg" className="gap-2 rounded-xl bg-primary px-6 text-white shadow-md shadow-primary/20 transition-transform hover:scale-[1.02] hover:bg-primary-dark">
-                Mulai Analisis <ArrowRight size={16} />
+                {fromReport ? "Analisis Lagi" : "Mulai Analisis"} <ArrowRight size={16} />
               </Button>
               <Button onClick={() => document.getElementById("how-it-works")?.scrollIntoView({ behavior: "smooth" })} size="lg" variant="outline" className="rounded-xl border-slate-300 px-6 text-slate-700 transition-transform hover:scale-[1.02]">
                 Lihat Cara Kerja
@@ -118,9 +119,11 @@ export default function Landing() {
               <div className="mt-5 h-px w-full bg-slate-200" />
 
               <div className="mt-5 flex items-center justify-between">
-                <p className="text-xs text-slate-400">Hasil personal muncul setelah kamu isi Assessment</p>
+                <p className="text-xs text-slate-400">
+                  {fromReport ? "Rekomendasimu sudah selesai dianalisis" : "Hasil personal muncul setelah kamu isi Assessment"}
+                </p>
                 <Badge className="rounded-full bg-success-light text-success hover:bg-success-light shrink-0">
-                  2 menit
+                  {fromReport ? "Selesai" : "2 menit"}
                 </Badge>
               </div>
             </motion.div>
