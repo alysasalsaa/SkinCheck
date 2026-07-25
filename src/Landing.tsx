@@ -5,7 +5,7 @@ import {
   Sparkles, ShieldCheck, BadgeCheck, ArrowRight, Database,
   Eye, MessageSquareText, Droplets, Target, FlaskConical,
   Wallet, HeartPulse, ClipboardCheck, ClipboardList, BrainCog,
-  Recycle, Factory, Star,
+  Recycle, Factory,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +76,9 @@ export default function Landing() {
             </div>
           </motion.div>
 
-          {/* Kanan: Glass card hero visual */}
+          {/* Kanan: Glass card hero visual -- nunjukin PROSES sistem (fakta),
+              bukan hasil rekomendasi palsu. Angka spesifik cuma muncul
+              setelah user beneran isi Assessment. */}
           <motion.div
             initial={{ opacity: 0, scale: 0.94 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -89,31 +91,36 @@ export default function Landing() {
               className="relative rounded-3xl border border-white/60 bg-white/70 p-7 shadow-[0_20px_60px_rgba(59,130,246,0.15)] backdrop-blur-xl"
             >
               <div className="flex items-center justify-between">
-                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Skin Report</span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-400">Cara Kerja Sistem</span>
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-success-light">
                   <ShieldCheck size={14} className="text-success" />
                 </span>
               </div>
 
-              <div className="mt-6 flex items-end gap-2">
-                <span className="text-5xl font-extrabold text-primary">95%</span>
-                <span className="mb-1.5 text-sm font-medium text-slate-500">Skin Match</span>
-              </div>
-
-              <div className="mt-1 flex items-center gap-1 text-gold">
-                {Array.from({ length: 5 }).map((_, i) => <Star key={i} size={13} fill="currentColor" strokeWidth={0} />)}
-                <span className="ml-1 text-xs font-medium text-slate-400">Evidence Level</span>
+              <div className="mt-5 flex flex-col gap-3.5">
+                {[
+                  { icon: ClipboardCheck, label: "Constraint Engine", desc: "BPOM & kehamilan dicek" },
+                  { icon: FlaskConical, label: "Evidence-Aware Scoring", desc: "Kandungan dicocokkan" },
+                  { icon: MessageSquareText, label: "Explainable Result", desc: "Alasan ditulis jelas" },
+                ].map((step) => (
+                  <div key={step.label} className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary-light">
+                      <step.icon size={15} className="text-primary" />
+                    </span>
+                    <div>
+                      <p className="text-sm font-bold leading-none text-ink">{step.label}</p>
+                      <p className="mt-1 text-[11px] leading-none text-slate-400">{step.desc}</p>
+                    </div>
+                  </div>
+                ))}
               </div>
 
               <div className="mt-5 h-px w-full bg-slate-200" />
 
               <div className="mt-5 flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-slate-400">AI Confidence</p>
-                  <p className="text-xl font-bold text-ink">94%</p>
-                </div>
-                <Badge className="rounded-full bg-success-light text-success hover:bg-success-light">
-                  Routine Ready
+                <p className="text-xs text-slate-400">Hasil personal muncul setelah kamu isi Assessment</p>
+                <Badge className="rounded-full bg-success-light text-success hover:bg-success-light shrink-0">
+                  2 menit
                 </Badge>
               </div>
             </motion.div>
@@ -124,10 +131,10 @@ export default function Landing() {
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
               className="absolute -bottom-6 -left-8 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-lg"
             >
-              <FlaskConical size={16} className="text-primary" />
+              <BadgeCheck size={16} className="text-primary" />
               <div>
-                <p className="text-[11px] text-slate-400 leading-none">Ingredient Matched</p>
-                <p className="text-sm font-bold leading-none mt-1">Niacinamide + Ceramide</p>
+                <p className="text-[11px] text-slate-400 leading-none">Basis Data</p>
+                <p className="text-sm font-bold leading-none mt-1">244 Produk, 100% BPOM</p>
               </div>
             </motion.div>
           </motion.div>
