@@ -131,10 +131,10 @@ export default function Landing() {
               transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut", delay: 0.5 }}
               className="absolute -bottom-6 -left-8 flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-lg"
             >
-              <BadgeCheck size={16} className="text-primary" />
+              <FlaskConical size={16} className="text-primary" />
               <div>
-                <p className="text-[11px] text-slate-400 leading-none">Basis Data</p>
-                <p className="text-sm font-bold leading-none mt-1">244 Produk, 100% BPOM</p>
+                <p className="text-[11px] text-slate-400 leading-none">Cakupan Kategori</p>
+                <p className="text-sm font-bold leading-none mt-1">8 Kategori Skincare</p>
               </div>
             </motion.div>
           </motion.div>
