@@ -1,11 +1,10 @@
 import { motion } from "framer-motion";
 import {
   HeartPulse, Recycle, Factory, ArrowDown,
-  Users, Building2, GraduationCap, X, Check, BadgeCheck, ShieldCheck, Database, Globe2,
+  Users, Building2, GraduationCap, X, Check,
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { SectionTitle } from "@/components/SectionTitle";
-import { StatCard } from "@/components/StatCard";
 
 const SDG_COLORS: Record<string, string> = {
   "SDG 3": "bg-[#4C9F38]",
@@ -164,13 +163,6 @@ export default function Impact() {
               ))}
             </tbody>
           </table>
-        </div>
-
-        <div className="mt-8 grid grid-cols-2 gap-3">
-          <StatCard icon={BadgeCheck} value="202+" label="Produk Lokal" delay={0.1} />
-          <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.16} />
-          <StatCard icon={Database} value="9" label="Brand Lokal" delay={0.22} />
-          <StatCard icon={Globe2} value="4" label="SDGs Didukung" delay={0.28} />
         </div>
       </section>
 

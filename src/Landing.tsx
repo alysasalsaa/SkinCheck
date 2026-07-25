@@ -5,7 +5,7 @@ import {
   Sparkles, ShieldCheck, BadgeCheck, ArrowRight, Database,
   Eye, MessageSquareText, Droplets, Target, FlaskConical,
   Wallet, HeartPulse, ClipboardCheck, ClipboardList, BrainCog,
-  Globe2, Recycle, Factory, Star,
+  Recycle, Factory, Star,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -213,13 +213,6 @@ export default function Landing() {
               </div>
             </motion.div>
           ))}
-        </div>
-
-        <div className="mt-8 grid grid-cols-2 gap-3">
-          <StatCard icon={BadgeCheck} value="202+" label="Produk Lokal" delay={0.1} />
-          <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.16} />
-          <StatCard icon={Database} value="9" label="Brand Lokal" delay={0.22} />
-          <StatCard icon={Globe2} value="3" label="SDGs Didukung" delay={0.28} />
         </div>
       </section>
 
