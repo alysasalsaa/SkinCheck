@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Loader2,
   Droplets, Sun, RotateCcw, MessageCircle, GitCompare, TriangleAlert, CircleCheck,
-  Target, Brain, FileText, Trophy, Scale, Workflow, X, Camera,
+  Target, Brain, FileText, Trophy, Scale, Workflow, X, Camera, Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SkinIcon, { SKIN_TYPE_ICON_MAP, CONCERN_ICON_MAP } from "@/components/SkinIcon";
@@ -567,9 +567,16 @@ export default function Assessment() {
               </>
             )}
 
-            <Button onClick={resetAll} variant="outline" className="mt-8 w-full gap-2 rounded-xl border-slate-300">
-              <RotateCcw size={15} /> Mulai Ulang Analisis
-            </Button>
+            <div className="mt-8 flex gap-3">
+              <Button onClick={resetAll} variant="outline" className="w-full gap-2 rounded-xl border-slate-300">
+                <RotateCcw size={15} /> Analisis Ulang
+              </Button>
+              <Link to="/" className="w-full">
+                <Button variant="outline" className="w-full gap-2 rounded-xl border-slate-300">
+                  <Home size={15} /> Kembali ke Beranda
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         )}
       </div>
