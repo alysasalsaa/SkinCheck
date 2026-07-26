@@ -12,7 +12,7 @@ const TEAM = [
     desc: "Membangun Recommendation Engine, Knowledge Base, Explainable AI, dan seluruh aplikasi web.",
   },
   {
-    name: "Asikha Shahrin Atsari",
+    name: "Rasikha Sharin Atsari",
     nim: "25030330026",
     prodi: "Pendidikan Kimia",
     icon: FlaskConical,
