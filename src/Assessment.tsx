@@ -63,6 +63,7 @@ type Screen = "wizard" | "loading" | "report";
 export default function Assessment() {
   const [screen, setScreen] = useState<Screen>("wizard");
   const [step, setStep] = useState(0);
+  const [gender, setGender] = useState<"pria" | "wanita" | null>(null);
   const [ageBracket, setAgeBracket] = useState<number | null>(null);
   const [skinType, setSkinType] = useState<string | null>(null);
   const [conditions, setConditions] = useState<string[]>([]);
@@ -80,7 +81,7 @@ export default function Assessment() {
   const [results, setResults] = useState<Recommendation[] | null>(null);
   const [error, setError] = useState<string | null>(null);
 
-  const totalQuestions = 6;
+  const totalQuestions = 7;
 
   function addLiked() {
     const v = likedInput.trim();
@@ -142,12 +143,17 @@ export default function Assessment() {
   }
 
   function goNext() {
-    if (step < totalQuestions - 1) setStep(step + 1);
-    else runAnalysis();
+    if (step < totalQuestions - 1) {
+      const next = step + 1 === 4 && gender === "pria" ? 5 : step + 1;
+      setStep(next);
+    } else runAnalysis();
   }
 
   function goBack() {
-    if (step > 0) setStep(step - 1);
+    if (step > 0) {
+      const prev = step - 1 === 4 && gender === "pria" ? 3 : step - 1;
+      setStep(prev);
+    }
   }
 
   async function runAnalysis() {
@@ -172,12 +178,13 @@ export default function Assessment() {
         body: JSON.stringify({
           p_skin_types: skinType ? [skinType] : [],
           p_age: ageBracket,
-          p_hamil: hamil === true,
+          p_hamil: gender === "pria" ? false : hamil === true,
           p_conditions: conditions,
           p_budget: budgetVal,
           p_liked_products: likedProducts,
           p_disliked_products: dislikedProducts,
           p_limit_per_category: 3,
+          p_gender: gender,
         }),
       });
       if (!res.ok) throw new Error("Gagal mengambil data dari server.");
@@ -200,6 +207,7 @@ export default function Assessment() {
   function resetAll() {
     setScreen("wizard");
     setStep(0);
+    setGender(null);
     setAgeBracket(null);
     setSkinType(null);
     setConditions([]);
@@ -234,9 +242,10 @@ export default function Assessment() {
     : null;
 
   const isNextDisabled =
-    (step === 0 && ageBracket === null) ||
-    (step === 1 && skinType === null) ||
-    (step === 3 && hamil === null);
+    (step === 0 && gender === null) ||
+    (step === 1 && ageBracket === null) ||
+    (step === 2 && skinType === null) ||
+    (step === 4 && gender !== "pria" && hamil === null);
 
   return (
     <div className="min-h-screen bg-[#FAFAF8]">
@@ -281,6 +290,13 @@ export default function Assessment() {
               >
                 {step === 0 && (
                   <>
+                    <h2 className="mb-5 text-xl font-extrabold text-ink">Jenis kelaminmu?</h2>
+                    <OptionButton selected={gender === "wanita"} onClick={() => setGender("wanita")}>Perempuan</OptionButton>
+                    <OptionButton selected={gender === "pria"} onClick={() => setGender("pria")}>Laki-laki</OptionButton>
+                  </>
+                )}
+                {step === 1 && (
+                  <>
                     <h2 className="mb-5 text-xl font-extrabold text-ink">Berapa usiamu?</h2>
                     {AGE_BRACKETS.map((b) => (
                       <OptionButton key={b.label} selected={ageBracket === b.value} onClick={() => setAgeBracket(b.value)}>
@@ -289,7 +305,7 @@ export default function Assessment() {
                     ))}
                   </>
                 )}
-                {step === 1 && (
+                {step === 2 && (
                   <>
                     <h2 className="mb-5 text-xl font-extrabold text-ink">
                       Bagaimana kondisi wajahmu 30 menit setelah cuci muka?
@@ -304,7 +320,7 @@ export default function Assessment() {
                     ))}
                   </>
                 )}
-                {step === 2 && (
+                {step === 3 && (
                   <>
                     <h2 className="mb-1 text-xl font-extrabold text-ink">Apa target utamamu?</h2>
                     <p className="mb-4 text-sm text-slate-400">Boleh pilih lebih dari satu</p>
@@ -318,7 +334,7 @@ export default function Assessment() {
                     ))}
                   </>
                 )}
-                {step === 3 && (
+                {step === 4 && gender !== "pria" && (
                   <>
                     <h2 className="mb-5 text-xl font-extrabold text-ink">
                       Apakah kamu sedang hamil atau menyusui?
@@ -327,7 +343,7 @@ export default function Assessment() {
                     <OptionButton selected={hamil === false} onClick={() => setHamil(false)}>Tidak</OptionButton>
                   </>
                 )}
-                {step === 4 && (
+                {step === 5 && (
                   <>
                     <h2 className="mb-1 text-xl font-extrabold text-ink">Budget maksimal per produk?</h2>
                     <p className="mb-4 text-sm text-slate-400">Opsional - kosongkan apabila tidak ada batasan</p>
@@ -344,7 +360,7 @@ export default function Assessment() {
                     </div>
                   </>
                 )}
-                {step === 5 && (
+                {step === 6 && (
                   <>
                     <h2 className="mb-1 text-xl font-extrabold text-ink">Pernah pakai skincare sebelumnya?</h2>
                     <p className="mb-4 text-sm text-slate-400">Opsional -- bantu kami menghindari kandungan yang pernah membuat kulitmu tidak cocok</p>
@@ -447,9 +463,10 @@ export default function Assessment() {
                 <h2 className="mt-1 text-center text-2xl font-extrabold text-ink">Hasil analisis kulitmu</h2>
 
                 <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+                  <ReportRow label="Jenis Kelamin" value={gender === "pria" ? "Laki-laki" : gender === "wanita" ? "Perempuan" : "-"} />
                   <ReportRow label="Tipe Kulit" value={skinType ?? "-"} />
                   <ReportRow label="Concern" value={conditions.length ? conditions.join(", ") : "Tidak ada spesifik"} />
-                  <ReportRow label="Hamil / Menyusui" value={hamil ? "Ya" : "Tidak"} last />
+                  <ReportRow label="Hamil / Menyusui" value={gender === "pria" ? "Tidak berlaku" : hamil ? "Ya" : "Tidak"} last />
                 </div>
 
                 {/* Analisis Foto -- OPSIONAL, terpisah dari Recommendation Engine.
