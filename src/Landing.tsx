@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
@@ -15,10 +15,60 @@ import { FeatureCard } from "@/components/FeatureCard";
 import { Stepper } from "@/components/Stepper";
 import { Navbar } from "@/components/Navbar";
 
+const SUPABASE_URL = "https://ncdbcxhnkpzgmoioxskg.supabase.co";
+const SUPABASE_KEY = "sb_publishable_WjZblozn_J7IhWpOWJ2MLw_ApxuFN2w";
+
+// Fallback values shown before the live fetch resolves (or if it fails)
+const FALLBACK_STATS = { totalProducts: 488, bpomPct: 99, totalBrands: 20, totalIngredients: 33 };
+
+function useLiveStats() {
+  const [stats, setStats] = useState(FALLBACK_STATS);
+
+  useEffect(() => {
+    let cancelled = false;
+    const headers = {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      Prefer: "count=exact",
+    };
+    const getCount = async (path: string) => {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+        headers: { ...headers, Range: "0-0" },
+      });
+      const range = res.headers.get("content-range"); // "0-0/488"
+      return range ? parseInt(range.split("/")[1], 10) || 0 : 0;
+    };
+
+    (async () => {
+      try {
+        const [totalProducts, bpomVerified, totalIngredients, brandsRes] = await Promise.all([
+          getCount("products?select=id"),
+          getCount("products?select=id&bpom_status=eq.verified_from_source"),
+          getCount("ingredients_knowledge?select=ingredient_name"),
+          fetch(`${SUPABASE_URL}/rest/v1/products?select=brand`, {
+            headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${SUPABASE_KEY}` },
+          }).then((r) => r.json()),
+        ]);
+        if (cancelled || !totalProducts) return;
+        const totalBrands = new Set((brandsRes as { brand: string }[]).map((r) => r.brand)).size;
+        const bpomPct = Math.floor((bpomVerified / totalProducts) * 100);
+        setStats({ totalProducts, bpomPct, totalBrands, totalIngredients: totalIngredients || FALLBACK_STATS.totalIngredients });
+      } catch {
+        // keep fallback values on any network/parsing error
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, []);
+
+  return stats;
+}
+
 export default function Landing() {
   const navigate = useNavigate();
   const location = useLocation();
   const fromReport = Boolean((location.state as { fromReport?: boolean } | null)?.fromReport);
+  const stats = useLiveStats();
 
   useEffect(() => {
     if (location.hash) {
@@ -70,10 +120,10 @@ export default function Landing() {
             </div>
 
             <div className="mt-2 grid grid-cols-2 gap-3">
-              <StatCard icon={BadgeCheck} value="488+" label="Produk Lokal" delay={0.1} />
-              <StatCard icon={ShieldCheck} value="99%+" label="BPOM Verified" delay={0.18} />
-              <StatCard icon={Database} value="20" label="Brand Lokal" delay={0.26} />
-              <StatCard icon={FlaskConical} value="33+" label="Kandungan Aktif" delay={0.34} />
+              <StatCard icon={BadgeCheck} value={`${stats.totalProducts}+`} label="Produk Lokal" delay={0.1} />
+              <StatCard icon={ShieldCheck} value={`${stats.bpomPct}%+`} label="BPOM Verified" delay={0.18} />
+              <StatCard icon={Database} value={`${stats.totalBrands}`} label="Brand Lokal" delay={0.26} />
+              <StatCard icon={FlaskConical} value={`${stats.totalIngredients}+`} label="Kandungan Aktif" delay={0.34} />
             </div>
           </motion.div>
 
@@ -156,7 +206,7 @@ export default function Landing() {
             index={0}
             icon={Database}
             title="Knowledge Base"
-            description="488 produk skincare lokal, kandungan aktif, dan status BPOM terverifikasi, bukan data yang diketik asal."
+            description={`${stats.totalProducts} produk skincare lokal, kandungan aktif, dan status BPOM terverifikasi, bukan data yang diketik asal.`}
           />
           <FeatureCard
             index={1}
