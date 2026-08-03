@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import {
   ArrowLeft, ArrowRight, Check, Loader2,
   Droplets, Sun, RotateCcw, MessageCircle, GitCompare, TriangleAlert, CircleCheck,
-  Target, Brain, FileText, Trophy, Scale, Workflow, X, Camera, Home,
+  Target, Brain, FileText, Trophy, Scale, Workflow, X, Camera, Home, Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import SkinIcon, { SKIN_TYPE_ICON_MAP, CONCERN_ICON_MAP } from "@/components/SkinIcon";
@@ -154,6 +154,11 @@ export default function Assessment() {
       const prev = step - 1 === 4 && gender === "pria" ? 3 : step - 1;
       setStep(prev);
     }
+  }
+
+  function goEditAnswers() {
+    setScreen("wizard");
+    setStep(0);
   }
 
   async function runAnalysis() {
@@ -584,7 +589,14 @@ export default function Assessment() {
               </>
             )}
 
-            <div className="mt-8 flex gap-3">
+            <button
+              onClick={goEditAnswers}
+              className="mt-8 flex w-full items-center justify-center gap-2 rounded-xl border border-primary-light bg-primary-light/30 py-2.5 text-sm font-semibold text-primary hover:bg-primary-light/50"
+            >
+              <Pencil size={14} /> Ubah Jawaban
+            </button>
+
+            <div className="mt-3 flex gap-3">
               <Button onClick={resetAll} variant="outline" className="w-full gap-2 rounded-xl border-slate-300">
                 <RotateCcw size={15} /> Analisis Ulang
               </Button>
