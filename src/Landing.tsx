@@ -70,9 +70,9 @@ export default function Landing() {
             </div>
 
             <div className="mt-2 grid grid-cols-2 gap-3">
-              <StatCard icon={BadgeCheck} value="244+" label="Produk Lokal" delay={0.1} />
-              <StatCard icon={ShieldCheck} value="100%" label="BPOM Verified" delay={0.18} />
-              <StatCard icon={Database} value="10" label="Brand Lokal" delay={0.26} />
+              <StatCard icon={BadgeCheck} value="405+" label="Produk Lokal" delay={0.1} />
+              <StatCard icon={ShieldCheck} value="98%+" label="BPOM Verified" delay={0.18} />
+              <StatCard icon={Database} value="15" label="Brand Lokal" delay={0.26} />
               <StatCard icon={FlaskConical} value="33+" label="Kandungan Aktif" delay={0.34} />
             </div>
           </motion.div>
@@ -156,7 +156,7 @@ export default function Landing() {
             index={0}
             icon={Database}
             title="Knowledge Base"
-            description="244 produk skincare lokal, kandungan aktif, dan status BPOM terverifikasi, bukan data yang diketik asal."
+            description="405 produk skincare lokal, kandungan aktif, dan status BPOM terverifikasi, bukan data yang diketik asal."
           />
           <FeatureCard
             index={1}
